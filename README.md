@@ -5,7 +5,7 @@
 Investigators:
 Mehul Antony — [mantony2@slu.edu](mailto:mantony2@slu.edu)
 Alexander Myers — [amyersXX@slu.edu](mailto:amyersXX@slu.edu)
-James Mueller — [jmuellerXX@slu.edu](mailto:jmuellerXX@slu.edu)
+James Mueller — [jmuellerXX@slu.edu](mailto:james.p.mueller@slu.edu)
 Henry Wang — [hwang59@slu.edu](mailto:hwang59@slu.edu)
 Revateesa Dammalapati - [revateesa.dammalapati@slu.edu]
 # Project Statement
