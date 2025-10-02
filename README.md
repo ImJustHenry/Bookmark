@@ -87,3 +87,4 @@ Discord (team coordination)
 # Architectural Diagram
 
 (Placeholder: User → Web App (Flask frontend/backend) → Database + APIs)
+# team-james-demo
