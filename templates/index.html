@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark! - Textbook Price Comparison</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            padding-top: 50px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .form-control {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .retailer-result {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .book-title {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        .book-author {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .book-price {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .retailer-name {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner-border {
+            color: #667eea;
+        }
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 50px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header Card -->
+                <div class="card mb-4">
+                    <div class="card-header text-center">
+                        <h1 class="mb-0"><i class="fas fa-bookmark me-2"></i>Bookmark!</h1>
+                        <p class="mb-0 mt-2">Compare Textbook Prices Across Multiple Retailers</p>
+                    </div>
+                </div>
+
+                <!-- Search Card -->
+                <div class="card">
+                    <div class="card-body p-4">
+                        <form id="searchForm">
+                            <div class="mb-3">
+                                <label for="isbn" class="form-label fw-bold">
+                                    <i class="fas fa-barcode me-2"></i>Enter ISBN Number
+                                </label>
+                                <input type="text" class="form-control" id="isbn" 
+                                       placeholder="e.g., 9780134685991" 
+                                       maxlength="13" required>
+                                <div class="form-text">
+                                    Enter a 10 or 13 digit ISBN number to compare prices across retailers
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search me-2"></i>Compare Prices
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Loading Spinner -->
+                        <div class="loading" id="loading">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Searching retailers for best prices...</p>
+                        </div>
+
+                        <!-- Results -->
+                        <div id="results"></div>
+                    </div>
+                </div>
+
+                <!-- Demo ISBNs -->
+                <div class="card mt-4">
+                    <div class="card-body p-4">
+                        <h4 class="text-center mb-4">Try These Demo ISBNs</h4>
+                        <div class="row text-center">
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-outline-primary" onclick="searchISBN('9780134685991')">
+                                    Clean Code - 9780134685991
+                                </button>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-outline-primary" onclick="searchISBN('9780201633610')">
+                                    Design Patterns - 9780201633610
+                                </button>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <button class="btn btn-outline-primary" onclick="searchISBN('9780321125217')">
+                                    Effective Java - 9780321125217
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Bookmark! - Affordable Textbook Shopping</p>
+        <p><small>Team: Mehul, Alex, James, Henry, Revateesa</small></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const isbn = document.getElementById('isbn').value.trim();
+            if (isbn) {
+                searchBook(isbn);
+            }
+        });
+
+        function searchISBN(isbn) {
+            document.getElementById('isbn').value = isbn;
+            searchBook(isbn);
+        }
+
+        async function searchBook(isbn) {
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            // Show loading
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ isbn: isbn })
+                });
+
+                const data = await response.json();
+                
+                // Hide loading
+                loading.style.display = 'none';
+
+                if (data.success && data.results) {
+                    displayResults(data.results);
+                } else {
+                    displayError(data.error || 'Book not found');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                displayError('Network error: ' + error.message);
+            }
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            let html = '<h4 class="mt-4 mb-3">Price Comparison Results</h4>';
+            
+            if (results.retailers && Object.keys(results.retailers).length > 0) {
+                for (const [retailer, book] of Object.entries(results.retailers)) {
+                    if (book.error) {
+                        html += `
+                            <div class="retailer-result">
+                                <div class="retailer-name">${retailer.toUpperCase()}</div>
+                                <div class="text-danger">${book.error}</div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="retailer-result">
+                                <div class="retailer-name">${retailer.toUpperCase()}</div>
+                                <div class="book-title">${book.title}</div>
+                                <div class="book-author">${book.author}</div>
+                                <div class="book-price">${book.price}</div>
+                                <div class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>${book.availability}
+                                </div>
+                                ${book.url ? `<a href="${book.url}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                                    <i class="fas fa-external-link-alt me-1"></i>View on ${retailer}
+                                </a>` : ''}
+                            </div>
+                        `;
+                    }
+                }
+            } else {
+                html += '<div class="alert alert-info">No results found from any retailers.</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function displayError(message) {
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <div class="alert alert-danger mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>${message}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
