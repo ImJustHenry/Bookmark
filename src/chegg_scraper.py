@@ -4,7 +4,7 @@ import logging
 import re
 from urllib.parse import urlencode
 import time
-from user_agent_faker import get_fake_user_agent
+from UserAgentFaker import GetFakeUserAgent
 
 class CheggScraper:
     def __init__(self):
@@ -15,7 +15,7 @@ class CheggScraper:
     def _update_headers(self):
         """Update headers with random user agent (based on existing Scrapebot.py pattern)"""
         self.session.headers.update({
-            'User-Agent': get_fake_user_agent(),
+            'User-Agent': GetFakeUserAgent(),
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Accept-Encoding': 'gzip, deflate',
