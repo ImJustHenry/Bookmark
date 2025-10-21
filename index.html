@@ -1,34 +1,138 @@
 <!DOCTYPE html>
 <html lang = "en">
    <head>
-      <title>Software Engineering Group Project</title>
+      <meta name="viewport" content="width=device-width, intial-scale=1.0">
+      <title>Bookmark! - Find the Best Price!</title>
+
+      <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            
+         }
+
+         /* Window & Containers */
+
+         body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg,#a6783c, #f0b86e);
+            min-height: 100vh;
+            padding: 20px;
+         }
+
+         .screen {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100vh;
+         }
+
+         .mainContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            justify-items: space-between;
+         }
+
+         /* Content */
+
+         .navigationSection {
+            display: flex;
+            justify-content: center;
+            background: white;
+            border-color: black;
+            border-style: solid;
+            border-radius: 20px;
+            padding: 30px;
+            gap: 20px;
+         }
+
+         .websiteInfo {
+            background: white;
+            border-color: black;
+            border-style: solid;
+            border-radius: 20px;
+            padding: 30px;
+            justify-items: center;
+            align-content: center;
+         }
+
+         .searchContainer {
+            display: flex;
+            justify-content: center;
+            background: white;
+            border-color: black;
+            border-style: solid;
+            border-radius: 20px;
+            padding: 30px;
+            gap: 15px;
+         }
+
+         .searchbar {
+            padding: 12px 15px;
+            border: solid #a6783c;
+            border-radius: 20px;
+            width: 70%;
+            max-width: 500px;
+         }
+
+         .reviewContainer {
+            background: linear-gradient(deg245, #debfa0, #f0e5da);
+            border-color: black;
+            border-style: solid;
+            border-radius: 20px;
+            padding: 30px;
+         }
+
+         /* Buttons */
+         .navigationButton {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            border-radius: 10px;
+         }
+
+         .searchButton {
+            border-style: solid;
+            border-color: black;
+            border-radius: 20px;
+            background: #a6783c;
+            color: white;
+            font-weight: bold;
+         }
+
+
+      </style>
    </head>
    <body>
-      <header>
+      <div>
       <h1>Bookmark!</h1>
       <h2>Find Your Textbooks Instantly</h2>
-      <nav>
-         <a href="#home">Home</a>
-         <a href="#about">About</a>
-         <a href="#cart">Cart</a>
+      <nav class="navigationSection">
+         <a class="navigationButton" href="#cart">Cart</a>
       </nav>
-   </header>
+   </div>
 
    <section>
       <h3>Compare prices across Amazon, eBay and Google Books - all in one place!</h3>
    </section>
 
-   <section class="wrapper">
-      <div>
-         <input type = "text" placeholder="Search by author, edition, ISBN">
-         <button>GO</button>
+      <div class="searchContainer">
+         <input class="searchbar" type = "text" placeholder="Search by author, edition, ISBN">
+         <button class="seacrhButton">GO</button>
       </div>
-   </section>
 
-   <section>
+   <div class="websiteInfo">
       <p>Bookmark! is a student-friendly platform designed to make buying textbooks simpler, faster, and more affordable.
          With just one search, you can compare prices across multiple retailers, check book conditions, and choose what fits your budget best.
       </p>
+   </div>
+
+   <div class="reviewContainer">
       <h3>What our reviews say</h3>
       <p>“Bookmark! helped me find my required chemistry textbook for $30 less than the campus store.”
 — <em>Lena M., Sophomore in Biochemistry</em></p>
@@ -40,8 +144,8 @@
          “Finding affordable college textbooks has never been easier! I found all my required textbooks in under 2 minutes.”
 — <em>Rohith M., Freshman in Public Health</em>
       </p>
-      
-   </section>
+
+   </div>
 
    </body>
 </html>
