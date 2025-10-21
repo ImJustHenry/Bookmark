@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang = "en">
+   <head>
+      <title>Software Engineering Group Project</title>
+      <style>
+         header {
+            text-align: center;
+            background-color: rgb(247, 183, 183);
+            padding: 20px;
+         }
+
+         .navbar a {
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            color: rgb(115, 34, 34);
+         }
+         
+         .navbar a:hover {
+            color: #e74c3c;
+         }
+
+         section {
+            margin: 40px auto;
+            max-width: 800px;
+            text-align: center;
+         }
+
+         input, button {
+            padding: 10px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+         }
+
+         button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            cursor: pointer;
+         }
+      </style>
+   </head>
+   <body>
+      <header>
+      <h1>Bookmark!</h1>
+      <h2>Find Your Textbooks Instantly</h2>
+      <nav class="navbar">
+         <a href="#home">Home</a>
+         <a href="#about">About</a>
+         <a href="#cart">Cart</a>
+      </nav>
+   </header>
+
+   <section>
+      <h3>Compare prices across Amazon, eBay and Google Books - all in one place!</h3>
+   </section>
+
+   <section class="wrapper">
+      <div>
+         <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
+         <datalist id="history_list"></datalist>
+         <button id="go_button">GO</button>
+      </div>
+   </section>
+
+   <section>
+      <p>Bookmark! is a student-friendly platform designed to make buying textbooks simpler, faster, and more affordable.
+         With just one search, you can compare prices across multiple retailers, check book conditions, and choose what fits your budget best.
+      </p>
+      <h3>What our reviews say</h3>
+      <p>“Bookmark! helped me find my required chemistry textbook for $30 less than the campus store.”
+— <em>Lena M., Sophomore in Biochemistry</em></p>
+
+      <p>“Finally, a clean and simple way to compare book prices. It saves me so much time every semester!”
+— <em>Ryan T., Junior in Computer Engineering</em></p>
+
+      <p>
+         “Finding affordable college textbooks has never been easier! I found all my required textbooks in under 2 minutes.”
+— <em>Rohith M., Freshman in Public Health</em>
+      </p>
+      
+   </section>
+
+   </body>
+   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+   <script src = "/static/go_button.js"></script>
+</html>
+
