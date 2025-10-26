@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from typing import List, Dict, Union
 import re
 from fetch_html import fetch_html 
+import book
 
 def parse_abebooks_prices(html: str) -> List[Dict[str, Union[str, float]]]:
     """
@@ -43,12 +44,9 @@ def parse_abebooks_prices(html: str) -> List[Dict[str, Union[str, float]]]:
     
     return books
 
-def search_abebooks():
-    """
-    Prompts the user for ISBN and condition, then fetches and parses the top AbeBooks listing.
-    """
-    isbn = input("Enter ISBN number: ").strip()
-    condition = input("Do you want 'new' or 'used' books? ").strip().lower()
+def search_abebooks(isbn_param, condition_param):
+    isbn = str(isbn_param)
+    condition = str(condition_param)
 
     url = f"https://www.abebooks.com/servlet/SearchResults?cond={condition}&kn={isbn}"
 
