@@ -63,6 +63,7 @@ def search_abebooks(isbn_param, condition_param):
             return None
         
         abeTopResult = books[0]
+        abeTopResult['url'] = url
         
         print(f"\n{'='*60}")
         print("📖 First Book Found")
@@ -80,3 +81,11 @@ def search_abebooks(isbn_param, condition_param):
 
 if __name__ == "__main__":
     search_abebooks()
+
+def get_abebooks_prices(isbn):
+    result = search_abebooks(isbn, "new")
+    if result == None:
+        return None
+    book_result = book.Book(result['url'],result['title'],isbn,float(result['price']),book.Condition.NEW,book.Medium.PHYSICAL)
+    return book_result
+

@@ -2,6 +2,7 @@ from flask import Flask, render_template, send_from_directory, request, make_res
 from flask_socketio import SocketIO
 import os
 import uuid
+import book_finder
 
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
 template_dir = os.path.join(base_dir, "templates")
@@ -25,6 +26,10 @@ def getStatic():
 def go(data):
     session_id = request.cookies.get("session_id")
     user_search = data.get("search", "")
+    isbn = int(user_search)
     print(f"[Session {session_id}] User searched for: {user_search}")
+    result = book_finder.find_cheapest_book(isbn)
+    print(result.link)
+
 
 socketio.run(app)
