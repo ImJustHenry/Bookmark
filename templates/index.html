@@ -75,7 +75,7 @@
       <div>
          <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
          <datalist id="history_list"></datalist>
-         <a href="{{ url_for('results_page') }}">
+         <a>
             <button id="go_button">GO</button>
          </a>
       </div>
@@ -102,6 +102,7 @@
    </body>
    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
    <script src = "/static/go_button.js"></script>
+   <script src = "/static/redirect.js"></script>
    </div>
 
 </html>
