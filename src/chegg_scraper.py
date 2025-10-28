@@ -5,6 +5,7 @@ import re
 from urllib.parse import urlencode
 import time
 from UserAgentFaker import GetFakeUserAgent
+import book
 
 class CheggScraper:
     def __init__(self):
@@ -252,3 +253,12 @@ class CheggScraper:
         except Exception as e:
             logging.error(f"Error extracting from search results: {str(e)}")
             return None
+
+
+def get_chegg_prices(isbn):
+    chegg_scraper = CheggScraper()
+    result = chegg_scraper.get_book_price(isbn)
+    if result==None:
+        return None
+    book_result = book.Book(result['url'],result['title'],isbn,float(result['price.buy-price']),book.Condition.NEW,book.Medium.PHYSICAL)
+    return book_result
