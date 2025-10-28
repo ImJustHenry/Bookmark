@@ -10,9 +10,11 @@ def find_cheapest_book(isbn):
     if abebooks_book!=None:
         book_objects.append(abebooks_book)
     
+    """
     chegg_book = chegg_scraper.get_chegg_prices(isbn)
     if chegg_book!=None:
         book_objects.append(chegg_book)
+    """
 
     if book_objects == []:
         return None

@@ -3,6 +3,7 @@ from flask_socketio import SocketIO
 import os
 import uuid
 import book_finder
+import google_books_api
 
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
 template_dir = os.path.join(base_dir, "templates")
@@ -26,10 +27,14 @@ def getStatic():
 def go(data):
     session_id = request.cookies.get("session_id")
     user_search = data.get("search", "")
-    isbn = int(user_search)
+    googleBooksAPIObject = google_books_api.GoogleBooksAPI()
+    isbn = googleBooksAPIObject.search_book_by_name(user_search)[0]['isbn']
     print(f"[Session {session_id}] User searched for: {user_search}")
     result = book_finder.find_cheapest_book(isbn)
-    print(result.link)
+    if result != None:
+        print(result.link)
+    else:
+        print("No books found :(")
 
 
 socketio.run(app)
