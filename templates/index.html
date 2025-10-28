@@ -5,7 +5,7 @@
       <style>
          header {
             text-align: center;
-            background-color: rgb(247, 183, 183);
+            background: linear-gradient(135deg, #a6783c, #f0b86e);
             padding: 20px;
          }
 
@@ -38,6 +38,20 @@
             border: none;
             cursor: pointer;
          }
+
+         .info {
+            background-image:
+               linear-gradient(
+               rgba(255, 255, 255, 0.75),
+               rgba(255, 255, 255, 0.75)
+            ),
+            url("{{ url_for('static', filename='textbook_img.jpg') }}");
+         background-size: cover;
+         background-position: center;
+         background-repeat: no-repeat;
+         padding: 42px;
+         border-radius: 9px;
+         }
       </style>
    </head>
 
@@ -52,7 +66,8 @@
       </nav>
    </header>
 
-   <section>
+   <div class="info">
+      <section>
       <h3>Compare prices across Amazon, eBay and Google Books - all in one place!</h3>
    </section>
 
@@ -60,7 +75,9 @@
       <div>
          <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
          <datalist id="history_list"></datalist>
-         <button id="go_button">GO</button>
+         <a href="{{ url_for('results_page') }}">
+            <button id="go_button">GO</button>
+         </a>
       </div>
    </section>
 
@@ -85,5 +102,7 @@
    </body>
    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
    <script src = "/static/go_button.js"></script>
+   </div>
+
 </html>
 
