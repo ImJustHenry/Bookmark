@@ -113,7 +113,7 @@
       <div class="screen">
         <nav class="header">
             <div class="headerButton">
-                <a href="{{ url_for('home') }}">
+                <a href="#home">
                     <button type="button" class="submitButton">Home</button>
                 </a>
             </div>
@@ -137,12 +137,18 @@
 
         <div class="rightContent">
             <div class="bookInfo">
-                <h2>Book Title - ISBN Number</h2>
+                <h2>{{ title }} - {{ isbn }}</h2>
+                
             </div>
             <div class="priceList">
                 <div class="priceElement">
-                    <h3>Best Price! - Website 1:</h3>
-                    <p>$19.99</p>
+                    <h3>Best Price!</h3>
+                    <p>$ {{ price }}</p>
+                    <div class="headerButton">
+                        <a href = "{{ link }}">
+                            <button type="button" class="goToSiteButton">Go to store</button>
+                        </a>
+                    </div>
                 </div>
                 <div class="priceElement">
                     <h3>Website 2:</h3>
