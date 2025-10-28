@@ -11,7 +11,7 @@ socketio=SocketIO(app)
 print()
 
 @app.route("/")
-def results():
+def home(): #renamed this from "results" to "home" for clarity
     session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     resp = make_response(render_template("index.html"))
     resp.set_cookie("session_id", session_id, max_age=60*60*24) # When cookie expires
@@ -20,6 +20,10 @@ def results():
 @app.route("/static")
 def getStatic():
     return send_from_directory(static_dir, "/static")
+
+@app.route("/results")
+def results_page():
+    return render_template("ResultsPage.html")
 
 @socketio.on("Go_button_pushed")
 def go(data):
