@@ -114,13 +114,14 @@
         <nav class="header">
             <div class="headerButton">
                 <a href="#home">
-                    <button type="button" class="submitButton">Home</button>
+                <button type="button" class="submitButton">Home</button>
                 </a>
             </div>
         </nav>
 
         <div class="websiteInfo">
             <h2>Bookmark! Textbook Search Results</h2>
+            <h2>FOR TESTING: "<span id="searchInput"></span>"</h2>
         </div>
 
         <div class="mainContainer">
@@ -162,5 +163,13 @@
         </div>
         </div>
       </div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = localStorage.getItem("searchInput");
+
+            document.getElementById("searchInput").textContent = searchInput;
+        })
+      </script>
     </body>
 </html>
