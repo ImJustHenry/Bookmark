@@ -76,7 +76,7 @@
          <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
          <datalist id="history_list"></datalist>
          <a>
-            <button id="go_button">GO</button>
+            <button onclick="search()" id="go_button">GO</button>
          </a>
       </div>
    </section>
@@ -105,5 +105,12 @@
    <script src = "/static/redirect.js"></script>
    </div>
 
+   <script>
+      function search() {
+         const searchInput = document.getElementById("search_input").value;
+         localStorage.setItem("searchInput", searchInput);
+         window.location.href = "ResultsPage.html";
+      }
+   </script>
 </html>
 
