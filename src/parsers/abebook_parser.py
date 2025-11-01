@@ -82,7 +82,7 @@ def search_abebooks(isbn_param, condition_param):
 if __name__ == "__main__":
     search_abebooks()
 
-def get_abebooks_prices(isbn):
+def parse(isbn):
     result = search_abebooks(isbn, "new")
     if result == None:
         return None
