@@ -1,10 +1,33 @@
+import sys
+PARSER_PATH = "./src/parsers/"
+parser_modules = []
+sys.path.insert(0,"./src/")
+sys.path.insert(0,PARSER_PATH)
 import unittest
-import abebook_parser
+import importlib
 import book
-def test_parser_follows_standard(parser_object):
-    try:
-        book_result: book.Book = parser_object.parse(9798991511100, book.Condition.NEW)
-    except TypeError:
-    if type(book_result) != book.Book:
-        return False
-    if book_result.pric
+import os
+
+
+def import_parsers():
+    
+    filenames = os.listdir(PARSER_PATH)
+    for f in filenames:
+        if f.endswith(".py"):
+            name = f[:-3]
+            module = importlib.import_module(name)
+            parser_modules.append(module)
+
+class test_parsers(unittest.TestCase):
+    def test_parsers_follows_standard(self):
+        import_parsers()
+        for p in parser_modules:
+            with self.subTest(p=p):
+                book_result = p.parse(9798991511100)
+                self.assertTrue(type(book_result) == book.Book)
+
+                
+   
+
+if __name__ == '__main__':
+    unittest.main()

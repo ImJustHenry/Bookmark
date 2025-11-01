@@ -262,7 +262,7 @@ class CheggScraper:
             logging.error(f"Error extracting from search results: {str(e)}")
             return None
 
-def get_chegg_prices(isbn):
+def parse(isbn):
     chegg_scraper = CheggScraper()
     result = chegg_scraper.get_book_price(isbn)
     print(result)
