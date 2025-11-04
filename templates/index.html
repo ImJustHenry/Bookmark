@@ -2,37 +2,11 @@
 <html lang = "en">
    <head>
       <title>Software Engineering Group Project</title>
-
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
       <style>
-         body {
-            font-family: "Poppins", sans-serif;
-            background: white;
-            color: black;
-            margin: 0;
-         }
-
          header {
             text-align: center;
             background: linear-gradient(135deg, #a6783c, #f0b86e);
-            padding: 50px 20px;
-            color: white;
-         }
-
-         h1 {
-            margin: 0;
-            font-size: 45px;
-            font-weight: 700;
-         }
-
-         h2 {
-            margin-top: 10px;
-            font-size: 22px;
-            font-weight: 400;
-         }
-
-         .navbar {
-            margin-top: 10
+            padding: 20px;
          }
 
          .navbar a {
@@ -40,7 +14,6 @@
             text-decoration: none;
             font-weight: bold;
             color: rgb(115, 34, 34);
-            font-size: 18px;
          }
          
          .navbar a:hover {
@@ -51,30 +24,18 @@
             margin: 40px auto;
             max-width: 800px;
             text-align: center;
-            padding: 10px;
          }
 
-         input {
-            width: 450px;
-            padding: 14px 20px;
-            border: 1.5px solid #ccc;
-            border-radius: 50px;
-            font-size: 18px;
-            outline: none;
-         }
-
-         input:focus {
-            border-color: #e74c3c;
+         input, button {
+            padding: 10px 30px;
+            border-radius: 5px;
+            font-size: 16px;
          }
 
          button {
-            padding: 14px 30px;
             background-color: #e74c3c;
             color: white;
-            font-weight: bold;
-            font-size: 15px;
             border: none;
-            border-radius: 50px;
             cursor: pointer;
          }
 
@@ -85,37 +46,11 @@
                rgba(255, 255, 255, 0.75)
             ),
             url("{{ url_for('static', filename='textbook_img.jpg') }}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            padding-top: 20px;
-            border-radius: 12px;
-            margin-top: 30px;
-            min-height: 400px;
-         }
-
-         p {
-            margin: 20px auto;
-            font-size: 20px;
-            max-width: 800px;
-            line-height: 1.6;
-         }
-
-         h3 {
-            font-size: 22px;
-            margin-top: 60px;
-            margin-bottom: 20px;
-         }
-
-         /* mobile responsiveness*/
-         @media (max-width: 600px) {
-            input {
-               width: 80%;
-            }
-            button {
-               width: 50%;
-               margin-top: 10px;
-            }
+         background-size: cover;
+         background-position: center;
+         background-repeat: no-repeat;
+         padding: 42px;
+         border-radius: 9px;
          }
       </style>
    </head>
