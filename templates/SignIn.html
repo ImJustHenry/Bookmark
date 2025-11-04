@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark! - Find the Best Price!</title>
+
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #a6783c, #f0b86e);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main Content */
+        .screen {
+            max-width: 1000px;
+            margin: 0;
+        }
+
+        .mainContainer {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .contentContainer {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(0,0,0,20);
+        }
+
+
+        /* Header Buttons */
+        .header {
+            display: block;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        
+        /* Greeting */
+        .greeting {
+            display: block;
+            justify-items: center;
+            row-gap: 20px;
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* Forms */
+        .form {
+            display: block;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .formGroup {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .formRow {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        /* Tabs */
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            background: white;
+            color: grey;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #a6783c, #f0b86e);
+            color: white;
+        }
+
+
+
+    </style>
+    
+</head>
+
+<body>
+    <div class ="screen">
+        <div class ="mainContainer">
+            <div class="contentContainer">
+                
+                <nav class="header">
+                    <div class="headerButton">
+                        <button type="button" class="submitButton">Home</button>
+                    </div>
+                </nav>
+
+                <div class="greeting">
+                    <h1>Bookmark!</h1>
+                    <p>Find your books at the best price, all in one place!</p>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" data-tab="login">Login</button>
+                    <button class="tab" data-tab="signUp">Sign-Up</button>
+                </div>
+                
+
+                <form id="loginForm" class ="form">
+                    <div class="formGroup">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="Enter email here" required>
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password here" required>
+                    </div>
+
+                    <button type="submit" class="submitButton">Login</button>
+                </form>
+
+                <form id="signUp" class="form">
+                    <div class="formGroup">
+                        <label for="signUpEmail">Email</label>
+                        <input type="email" id="signUpEmail" placeholder="Enter email here" required>
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="signUpPassword">Password</label>
+                        <input type="password" id="signUpPassword" placeholder="Enter password here" required>
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="signUpPasswordConfirm">Confirm Password</label>
+                        <input type="password" id="signUpPasswordConfirm" placeholder="Confirm password here" required>
+                    </div>
+
+                    <button type="submit" class="submitButton">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
