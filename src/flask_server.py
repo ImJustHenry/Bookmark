@@ -1,17 +1,26 @@
-from flask import Flask, render_template, send_from_directory, request, make_response, redirect, url_for
-from flask_socketio import SocketIO
+from flask import Flask, render_template, send_from_directory, request, make_response, jsonify, redirect, url_for
+from flask_socketio import SocketIO, emit
 import os
 import uuid
+import logging
+from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
 import book_finder
 import google_books_api
 import book
 
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")) 
+base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
 template_dir = os.path.join(base_dir,"templates") 
 static_dir = os.path.join(base_dir,"static")
 app = Flask(__name__, template_folder=template_dir,static_folder=static_dir)
 socketio=SocketIO(app)
-print()
+
+# Initialize book search service
+book_search_service = BookSearchService()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+# Global variable for best book (from main branch)
 best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN)
 
 @app.route("/")
@@ -35,21 +44,106 @@ def results_page():
     print(title)
     return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn)
 
+@app.route("/api/search/book", methods=["POST"])
+def search_book_api():
+    """API endpoint to search for books by name"""
+    try:
+        data = request.get_json()
+        book_name = data.get("book_name", "").strip()
+        
+        if not book_name:
+            return jsonify({"error": "Book name is required"}), 400
+        
+        logging.info(f"API search request for book: {book_name}")
+        result = search_book_by_name(book_name)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"API search error: {str(e)}")
+        return jsonify({"error": "Search failed", "details": str(e)}), 500
+
+@app.route("/api/search/isbn", methods=["POST"])
+def search_isbn_api():
+    """API endpoint to search for books by ISBN"""
+    try:
+        data = request.get_json()
+        isbn = data.get("isbn", "").strip()
+        
+        if not isbn:
+            return jsonify({"error": "ISBN is required"}), 400
+        
+        # Basic ISBN validation
+        isbn_clean = isbn.replace('-', '').replace(' ', '')
+        if not isbn_clean.isdigit() or len(isbn_clean) not in [10, 13]:
+            return jsonify({"error": "Invalid ISBN format"}), 400
+        
+        logging.info(f"API search request for ISBN: {isbn}")
+        result = search_book_by_isbn(isbn_clean)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"API ISBN search error: {str(e)}")
+        return jsonify({"error": "ISBN search failed", "details": str(e)}), 500
+
+@app.route("/api/health")
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        "status": "healthy",
+        "service": "Bookmark! Book Search API",
+        "features": ["Google Books", "Chegg", "AbeBooks"]
+    })
+
 @socketio.on("Go_button_pushed")
 def go(data):
+    """Handle real-time search requests via SocketIO"""
     global best_book
     session_id = request.cookies.get("session_id")
-    user_search = data.get("search", "")
-    googleBooksAPIObject = google_books_api.GoogleBooksAPI()
-    isbn = googleBooksAPIObject.search_book_by_name(user_search)[0]['isbn']
-    print(f"[Session {session_id}] User searched for: {user_search}")
-    result = book_finder.find_cheapest_book(isbn)
-    if result != None:
-        best_book = result
-        socketio.emit('redirect',url_for('results_page'))
-    else:
-        print("No books found :(")
+    user_search = data.get("search", "").strip()
+    
+    if not user_search:
+        emit("search_error", {"error": "Please enter a book name or ISBN"})
+        return
+    
+    logging.info(f"[Session {session_id}] User searched for: {user_search}")
+    
+    # Emit search started event
+    emit("search_started", {"search_term": user_search})
+    
+    try:
+        # Determine if it's an ISBN or book name
+        isbn_clean = user_search.replace('-', '').replace(' ', '')
+        
+        if isbn_clean.isdigit() and len(isbn_clean) in [10, 13]:
+            # Search by ISBN
+            result = search_book_by_isbn(isbn_clean)
+        else:
+            # Search by book name
+            result = search_book_by_name(user_search)
+        
+        # Emit results
+        emit("search_results", result)
+        
+        # Also update best_book for results page compatibility (from main branch)
+        # Try to find cheapest book using book_finder
+        try:
+            googleBooksAPIObject = google_books_api.GoogleBooksAPI()
+            book_results = googleBooksAPIObject.search_book_by_name(user_search)
+            if book_results and len(book_results) > 0:
+                isbn = book_results[0]['isbn']
+                found_book = book_finder.find_cheapest_book(isbn)
+                if found_book != None:
+                    best_book = found_book
+                    socketio.emit('redirect', url_for('results_page'))
+        except Exception as e:
+            logging.error(f"Error updating best_book: {str(e)}")
+        
+    except Exception as e:
+        logging.error(f"SocketIO search error: {str(e)}")
+        emit("search_error", {"error": f"Search failed: {str(e)}"})
 
-# Prevents the server from  starting during tests or imports
+# Prevents the server from starting during tests or imports
 if __name__ == "__main__":
-    socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, host="127.0.0.1", port=3000, allow_unsafe_werkzeug=True)
