@@ -5,6 +5,15 @@ import re
 from urllib.parse import urlencode
 import time
 from UserAgentFaker import GetFakeUserAgent
+import book
+
+import requests
+from bs4 import BeautifulSoup
+import logging
+import re
+from urllib.parse import urlencode
+import time
+from UserAgentFaker import GetFakeUserAgent
 
 class CheggScraper:
     def __init__(self):
@@ -217,7 +226,7 @@ class CheggScraper:
                         'isbn': isbn,
                         'title': '',
                         'author': '',
-                        'price': '',
+                        'price': '0',
                         'availability': '',
                         'url': '',
                         'source': 'Chegg'
@@ -244,7 +253,7 @@ class CheggScraper:
                             book_info['url'] = self.base_url + href
                         else:
                             book_info['url'] = href
-                    
+
                     return book_info
             
             return None
@@ -252,3 +261,12 @@ class CheggScraper:
         except Exception as e:
             logging.error(f"Error extracting from search results: {str(e)}")
             return None
+
+def parse(isbn):
+    chegg_scraper = CheggScraper()
+    result = chegg_scraper.get_book_price(isbn)
+    print(result)
+    if result==None:
+        return None
+    book_result = book.Book(result['url'],result['title'],isbn,float(result['price']),book.Condition.NEW,book.Medium.PHYSICAL)
+    return book_result

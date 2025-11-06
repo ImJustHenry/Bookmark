@@ -26,3 +26,12 @@ document.getElementById('go_button').addEventListener('click', () => {
 
     document.getElementById('search_input').value = "";
 });
+
+
+// ENTER key triggers search
+
+document.getElementById("search_input").addEventListener("keydown", (e) => {
+    if (e.key == "Enter") {
+        document.getElementById("go_button").click();
+    }
+});

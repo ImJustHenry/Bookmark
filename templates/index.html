@@ -2,10 +2,37 @@
 <html lang = "en">
    <head>
       <title>Software Engineering Group Project</title>
+
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
       <style>
+         body {
+            font-family: "Poppins", sans-serif;
+            background: white;
+            color: black;
+            margin: 0;
+         }
+
          header {
             text-align: center;
-            background-color: rgb(247, 183, 183);
+            background: linear-gradient(135deg, #a6783c, #f0b86e);
+            padding: 50px 20px;
+            color: white;
+         }
+
+         h1 {
+            margin: 0;
+            font-size: 45px;
+            font-weight: 700;
+         }
+
+         h2 {
+            margin-top: 10px;
+            font-size: 22px;
+            font-weight: 400;
+         }
+
+         .navbar {
+            margin-top: 10px;
             padding: 20px;
          }
 
@@ -13,11 +40,26 @@
             margin: 0 15px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 18px;
             color: rgb(115, 34, 34);
          }
-         
+
          .navbar a:hover {
             color: #e74c3c;
+            transition: 0.3s;
+         }
+
+         input {
+            width: 450px;
+            padding: 14px 20px;
+            border: 1.5px solid #ccc;
+            border-radius: 50px;
+            font-size: 18px;
+            outline: none;
+         }
+
+         input:focus {
+            border-color: #e74c3c;
          }
 
          section {
@@ -26,18 +68,63 @@
             text-align: center;
          }
 
-         input, button {
-            padding: 10px 30px;
-            border-radius: 5px;
-            font-size: 16px;
-         }
-
          button {
+            padding: 14px 30px;
             background-color: #e74c3c;
             color: white;
+            font-weight: bold;
+            font-size: 15px;
             border: none;
+            border-radius: 50px;
             cursor: pointer;
          }
+
+         .info {
+            background-image:
+               linear-gradient(
+               rgba(255, 255, 255, 0.75),
+               rgba(255, 255, 255, 0.75)
+            ),
+            url("{{ url_for('static', filename='textbook_img.jpg') }}");
+         background-size: cover;
+         background-position: center;
+         background-repeat: no-repeat;
+         padding-top: 20px;
+         border-radius: 12px;
+         min-height: 400px;
+         }
+
+         p {
+            margin: 20px auto;
+            font-size: 20px;
+            max-width: 800px;
+            line-height: 1.6;
+         }
+
+         h3 {
+            font-size: 22px;
+            margin-top: 60px;
+            margin-bottom: 20px;
+         }
+
+         footer {
+            font-size: 14px;
+            color: gray;
+            padding: 20px;
+            margin-top: 40px;
+         }
+
+         /* mobile responsiveness*/
+         @media (max-width: 600px) {
+            input {
+               width: 80%;
+            }
+            button {
+               width: 50%;
+               margin-top: 10px;
+            }
+         }
+
       </style>
    </head>
 
@@ -48,11 +135,12 @@
       <nav class="navbar">
          <a href="#home">Home</a>
          <a href="#about">About</a>
-         <a href="#cart">Cart</a>
+         <a href="#wishlist">Wishlist</a>
       </nav>
    </header>
 
-   <section>
+   <div class="info">
+      <section>
       <h3>Compare prices across Amazon, eBay and Google Books - all in one place!</h3>
    </section>
 
@@ -60,7 +148,9 @@
       <div>
          <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
          <datalist id="history_list"></datalist>
-         <button id="go_button">GO</button>
+         <a href="/Bookmark/templates/ResultsPage.html"> <!--Need to use Flask syntax here, temporary solution-->
+            <button id="go_button">GO</button>
+         </a>
       </div>
    </section>
 
@@ -82,8 +172,15 @@
       
    </section>
 
+   <footer>
+      © 2025 Bookmark! All rights reserved.
+   </footer>
+
    </body>
    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
    <script src = "/static/go_button.js"></script>
+   <script src = "/static/redirect.js"></script>
+   </div>
+
 </html>
 

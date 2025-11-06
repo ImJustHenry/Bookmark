@@ -1,13 +1,16 @@
-from flask import Flask, render_template, send_from_directory, request, make_response, jsonify
+from flask import Flask, render_template, send_from_directory, request, make_response, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit
 import os
 import uuid
 import logging
 from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
+import book_finder
+import google_books_api
+import book
 
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
-template_dir = os.path.join(base_dir, "templates")
-static_dir = os.path.join(base_dir, "static")
+template_dir = os.path.join(base_dir,"templates") 
+static_dir = os.path.join(base_dir,"static")
 app = Flask(__name__, template_folder=template_dir,static_folder=static_dir)
 socketio=SocketIO(app)
 
@@ -17,8 +20,11 @@ book_search_service = BookSearchService()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+# Global variable for best book (from main branch)
+best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN)
+
 @app.route("/")
-def results():
+def home(): #renamed this from "results" to "home" for clarity
     session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     resp = make_response(render_template("index.html"))
     resp.set_cookie("session_id", session_id, max_age=60*60*24) # When cookie expires
@@ -27,6 +33,16 @@ def results():
 @app.route("/static")
 def getStatic():
     return send_from_directory(static_dir, "/static")
+
+@app.route("/results")
+def results_page():
+    global best_book
+    title = best_book.title
+    isbn = best_book.isbn
+    price = best_book.price
+    link = best_book.link
+    print(title)
+    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn)
 
 @app.route("/api/search/book", methods=["POST"])
 def search_book_api():
@@ -83,6 +99,7 @@ def health_check():
 @socketio.on("Go_button_pushed")
 def go(data):
     """Handle real-time search requests via SocketIO"""
+    global best_book
     session_id = request.cookies.get("session_id")
     user_search = data.get("search", "").strip()
     
@@ -109,9 +126,24 @@ def go(data):
         # Emit results
         emit("search_results", result)
         
+        # Also update best_book for results page compatibility (from main branch)
+        # Try to find cheapest book using book_finder
+        try:
+            googleBooksAPIObject = google_books_api.GoogleBooksAPI()
+            book_results = googleBooksAPIObject.search_book_by_name(user_search)
+            if book_results and len(book_results) > 0:
+                isbn = book_results[0]['isbn']
+                found_book = book_finder.find_cheapest_book(isbn)
+                if found_book != None:
+                    best_book = found_book
+                    socketio.emit('redirect', url_for('results_page'))
+        except Exception as e:
+            logging.error(f"Error updating best_book: {str(e)}")
+        
     except Exception as e:
         logging.error(f"SocketIO search error: {str(e)}")
         emit("search_error", {"error": f"Search failed: {str(e)}"})
 
+# Prevents the server from starting during tests or imports
 if __name__ == "__main__":
     socketio.run(app, debug=True, host="127.0.0.1", port=3000, allow_unsafe_werkzeug=True)
