@@ -6,9 +6,9 @@ import book_finder
 import google_books_api
 import book
 
-base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
-template_dir = os.path.join(base_dir, "templates")
-static_dir = os.path.join(base_dir, "static")
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")) 
+template_dir = os.path.join(base_dir,"templates") 
+static_dir = os.path.join(base_dir,"static")
 app = Flask(__name__, template_folder=template_dir,static_folder=static_dir)
 socketio=SocketIO(app)
 print()
@@ -50,5 +50,6 @@ def go(data):
     else:
         print("No books found :(")
 
-
-socketio.run(app)
+# Prevents the server from  starting during tests or imports
+if __name__ == "__main__":
+    socketio.run(app, allow_unsafe_werkzeug=True)
