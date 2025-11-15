@@ -2,7 +2,7 @@ from typing import Dict, List, Optional, Union
 import logging
 from google_books_api import GoogleBooksAPI, search_books_by_name
 from improved_chegg_scraper import ImprovedCheggScraper
-from abebook_parser import parse_abebooks_prices
+from parsers.abebook_parser import parse_abebooks_prices
 from fetch_html import fetch_html
 from book import Book, Condition, Medium
 

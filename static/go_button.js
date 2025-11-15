@@ -27,6 +27,32 @@ document.getElementById('go_button').addEventListener('click', () => {
     document.getElementById('search_input').value = "";
 });
 
+document.getElementById('go_button').addEventListener("click", () => {
+    const query = document.getElementById("search_input").value.trim();
+    if (!query)
+        return;
+
+    //save search
+    let searches = JSON.parse(localStorage.getItem("searches") || "[]");
+    searches.push(query);
+    localStorage.setItem("searches", JSON.stringify(searches));
+
+    updateHistoryDisplay();
+
+    try {
+        socket.emit("Go_button_pushed", { search: query});
+    } catch (err) {
+        console.warn("Socket error: ", err);
+    }
+
+    // display loading screen
+    document.getElementById("loading-screen-overlay").style.display = "flex";
+
+    // redirect to results page route
+    setTimeout(() => {
+        window.location.href = "/results?query=" + encodeURIComponent(query);
+    },150);
+});
 
 // ENTER key triggers search
 

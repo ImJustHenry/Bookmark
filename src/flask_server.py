@@ -1,3 +1,10 @@
+import sys
+import os
+
+#ensure that Python can find src and parsers
+sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.join(os.path.dirname(__file__), "parsers"))
+
 from flask import Flask, render_template, send_from_directory, request, make_response, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit
 import os
