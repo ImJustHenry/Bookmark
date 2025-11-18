@@ -1,5 +1,4 @@
-import abebook_parser
-import chegg_scraper
+from parsers import *
 import book
 
 def find_cheapest_book(isbn):
@@ -7,8 +6,10 @@ def find_cheapest_book(isbn):
     book_objects = []
 
     abebooks_book = abebook_parser.parse(isbn)
+    macmillan_book = macmillan_parser.parse(isbn)
     if abebooks_book!=None:
         book_objects.append(abebooks_book)
+    
     
     """
     chegg_book = chegg_scraper.get_chegg_prices(isbn)
