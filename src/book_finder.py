@@ -6,7 +6,7 @@ def find_cheapest_book(isbn):
 
     book_objects = []
 
-    abebooks_book = abebook_parser.get_abebooks_prices(isbn)
+    abebooks_book = abebook_parser.parse(isbn)
     if abebooks_book!=None:
         book_objects.append(abebooks_book)
     
