@@ -1,7 +1,5 @@
-from abebook_parser import parse_abebooks_prices, search_abebooks
-
+import parsers.macmillan_parser
 def main():
-    search_abebooks()
+    print(parsers.macmillan_parser.parse(9781319079437))
 
-if __name__ == "__main__":
-    main()
+main()
