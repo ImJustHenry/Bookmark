@@ -17,6 +17,7 @@
                 font-family: Arial, sans-serif;
                 background: linear-gradient(135deg, #a6783c, #f0b86e);
                 min-height: 100vh;
+                padding: 20px;
             }
             
             .screen {
@@ -32,7 +33,6 @@
                 grid-template-columns: 9fr 7fr;
                 gap: 20px;
                 height: 100%;
-                justify-items: space-between;
             }
 
             .leftContent {
@@ -43,7 +43,7 @@
 
             .rightContent {
                 display: grid;
-                grid-template-rows: 0.1fr 0.3fr;
+                grid-template-rows: auto 1fr;
                 gap: 20px;
             }
 
@@ -53,57 +53,96 @@
                 background: white;
                 border-radius: 20px;
                 padding: 30px;
-                justify-items: center;
-                align-content: center;
+                text-align: center;
+                box-shadow: 0 5px 6px black;
             }
 
             .textbookContainer {
                 background: white;
                 border-radius: 20px;
                 padding: 30px;
-                justify-items: center;
-                align-content: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 5px 6px black;
             }
 
             .aiSummary {
                 background: white;
                 border-radius: 20px;
                 padding: 30px;
-                align-content: center;
+                box-shadow: 0 5px 6px black;
             }
 
             .bookInfo {
                 background: white;
                 border-radius: 20px;
                 padding: 20px;
-                justify-items: center;
+                text-align: center;
+                box-shadow: 0 5px 6px black;
             }
 
             .priceList {
                 display:grid;
                 grid-template-rows: repeat(auto-fill, 1fr);
                 gap: 10px;
-                align-content: center;
             }
 
             .priceElement {
                 background: white;
                 border-radius: 20px;
                 padding: 20px;
-                align-content: center;
-                justify-items: center;
+                text-align: center;
+                box-shadow: 0 5px 6px black;
+                transition: transform 0.5s;
             }
 
-            /* Other Buttons */
+            .priceElement:hover {
+                transform: translateY(-2px);
+            }
+
+            /* Other Buttons and Text */
 
             .submitButton {
                 background: linear-gradient(120deg, #22874f, #32c976);
                 border-radius: 30px;
-                width: 80px;
-                height: 40px;
+                width: 100px;
+                height: 50px;
+                border: none;
+                cursor: pointer;
+                color: white;
+                font-weight: bold;
+            }
+
+            .goToSiteButton {
+                background: linear-gradient(120deg, #eb532d, #57050c);
+                border-radius: 30px;
+                padding: 20px;
                 border: none;
                 color: white;
                 cursor: pointer;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+
+            .header {
+                display: flex;
+                justify-content: flex-start;
+            }
+
+            h2 {
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+            h3 {
+                margin-bottom: 10px;
+                color: #444;
+            }
+
+            p {
+                color: #666;
+                line-height: 1.5;
             }
 
         </style>
@@ -114,7 +153,7 @@
         <nav class="header">
             <div class="headerButton">
                 <a href="#home">
-                    <button type="button" class="submitButton">Home</button>
+                <button type="button" class="submitButton">Home</button>
                 </a>
             </div>
         </nav>
@@ -162,5 +201,6 @@
         </div>
         </div>
       </div>
+
     </body>
 </html>
