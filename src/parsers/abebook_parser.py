@@ -85,7 +85,7 @@ if __name__ == "__main__":
 def parse(isbn):
     result = search_abebooks(isbn, "new")
     if result == None:
-        return None
+        raise book.BookError()
     book_result = book.Book(result['url'],result['title'],isbn,float(result['price']),book.Condition.NEW,book.Medium.PHYSICAL)
     return book_result
 
