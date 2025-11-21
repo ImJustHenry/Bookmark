@@ -26,3 +26,8 @@ class Book:
 
     def __gt__(self,other):
         return self.price > other.price
+
+class BookError(Exception):
+    def __init__(self, message="Book ERROR!"):
+        self.message = message
+        super().__init__(self.message)
