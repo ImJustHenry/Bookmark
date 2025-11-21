@@ -4,6 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmark! - Find the Best Price!</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
         *{
             margin: 0;
@@ -14,7 +16,7 @@
         /*Winows & Containers */
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Poppins", sans-serif;
             background: linear-gradient(135deg, #a6783c, #f0b86e);
             min-height: 100vh;
             padding: 20px;
@@ -33,6 +35,7 @@
             grid-template-columns: 9fr 7fr;
             gap: 20px;
             height: 100%;
+            border-radius: 20px;
         }
 
         .leftContent {
@@ -50,11 +53,12 @@
         /* Content */
 
         .wishlistHeader {
+            font-size: 22px;
             background: white;
             border-radius: 20px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 5px 6px black;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .selectedBookObject {
@@ -64,14 +68,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 5px 6px black;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
         }
 
         .aiSummary {
             background: white;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 5px 6px black;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .bookList {
@@ -84,8 +89,9 @@
             background: white;
             border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 5px 6px black;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: transform 0.5s;
+            margin-bottom: 20px;
         }
 
         .bookListObject:hover {
@@ -93,10 +99,18 @@
         }
 
         .priceElement {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+
+            font-size: 22px;
+            font-weight: bold;
             background: white;
             border-radius: 10px;
-            padding: 10px;
-            margin-top: 10px;
+            padding: 20px;
+            margin-top: 15px;
             text-align: center;
         }
 
@@ -113,15 +127,22 @@
         }
 
         .goToSiteButton {
-            background: linear-gradient(120deg, #eb532d, #57050c);
+            display: inline-block;
+            background-color: #e74c3c;
             border-radius: 30px;
-            padding: 10px;
+            padding: 12px 25px;
             border: none;
             color: white;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             margin-top: 10px;
+            transition: transform 0.2s ease, opacity 0.2s ease;
             width: 100%;
+        }
+
+        .goToSiteButton:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
         }
 
         .header {
@@ -178,11 +199,9 @@
                         <h4>Best Available Price:</h4>
                         <div class="priceElement">
                             <p>$ {{ price }}</p>
-                            <div class="submitButton">
                                 <a href="{{ link }}">
                                     <button type="submit" class="goToSiteButton">Go to store</button>
                                 </a>
-                            </div>
                         </div>
                     </div>
 
