@@ -7,7 +7,11 @@ def search_macmillan(isbn):
 def parse(isbn):
     search_string = search_macmillan(isbn)
     html_string = fetch_html(url=search_string)
+    print(search_string)
     soup = BeautifulSoup(html_string, 'html.parser')
+    # CHECK IF THERE IS NOT A PRICE AND VALUE TAG
+    if not soup.find("div",{"class" : "priceandvaluetag"}):
+        return None
     # GET PRICE
     price_element = soup \
     .find("div",{"class" : "priceandvaluetag"}) \
@@ -27,4 +31,3 @@ def parse(isbn):
         medium=book.Medium.UNKNOWN
         )
     return output
-    
