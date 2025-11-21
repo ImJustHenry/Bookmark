@@ -11,7 +11,7 @@ def parse(isbn):
     soup = BeautifulSoup(html_string, 'html.parser')
     # CHECK IF THERE IS NOT A PRICE AND VALUE TAG
     if not soup.find("div",{"class" : "priceandvaluetag"}):
-        return None
+        raise book.BookError("Book not found on site!")
     # GET PRICE
     price_element = soup \
     .find("div",{"class" : "priceandvaluetag"}) \
@@ -31,3 +31,6 @@ def parse(isbn):
         medium=book.Medium.UNKNOWN
         )
     return output
+
+def get_test_isbn():
+    return 9781319221478 # Worlds of History, Volume 1

@@ -23,8 +23,16 @@ class test_parsers(unittest.TestCase):
         import_parsers()
         for p in parser_modules:
             with self.subTest(p=p):
-                book_result = p.parse(9798991511100)
+                book_result = p.parse(p.get_test_isbn())
                 self.assertTrue(type(book_result) == book.Book)
+    def test_parsers_error_properly(self):
+        import_parsers()
+        for p in parser_modules:
+            with self.subTest(p=p):
+                self.assertRaises(book.BookError,p.parse,-495872309487509283475098)
+                    
+
+
 
                 
    
