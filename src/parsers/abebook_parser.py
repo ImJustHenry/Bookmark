@@ -89,3 +89,5 @@ def parse(isbn):
     book_result = book.Book(result['url'],result['title'],isbn,float(result['price']),book.Condition.NEW,book.Medium.PHYSICAL)
     return book_result
 
+def get_test_isbn():
+    return 9798991511100 # Quantum Physics for Beginners
