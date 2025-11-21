@@ -29,7 +29,7 @@ class test_parsers(unittest.TestCase):
         import_parsers()
         for p in parser_modules:
             with self.subTest(p=p):
-                self.assertRaises(book.BookError,p.parse,-495872309487509283475098)
+                self.assertRaises(book.BookError,p.parse,-20435223542)
                     
 
 
