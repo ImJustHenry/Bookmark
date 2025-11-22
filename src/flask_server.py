@@ -14,6 +14,7 @@ from book_search_service import BookSearchService, search_book_by_name, search_b
 import book_finder
 import google_books_api
 import book
+from ai import get_recommendations
 
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
 template_dir = os.path.join(base_dir,"templates") 
@@ -154,6 +155,21 @@ def go(data):
     except Exception as e:
         logging.error(f"SocketIO search error: {str(e)}")
         emit("search_error", {"error": f"Search failed: {str(e)}"})
+
+@socketio.on('get_ai_recommendations')
+def handle_ai_recommendations(data):
+    logging.info(f"AI request received: {data}")
+    current_book = data['currentBook']
+    history = data['history'] 
+
+    try:
+        recommendations = get_recommendations(history, current_book)
+        logging.info(f"Recommendations: {recommendations}")
+        emit('ai_recommendations', recommendations)
+    except Exception as e:
+        logging.error(f"AI error: {str(e)}")
+        emit('ai_error', str(e))
+
 
 # Prevents the server from starting during tests or imports
 if __name__ == "__main__":
