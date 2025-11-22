@@ -28,7 +28,7 @@ book_search_service = BookSearchService()
 logging.basicConfig(level=logging.INFO)
 
 # Global variable for best book (from main branch)
-best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN)
+best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN, "")
 
 @app.route("/")
 def home(): #renamed this from "results" to "home" for clarity
@@ -48,8 +48,10 @@ def results_page():
     isbn = best_book.isbn
     price = best_book.price
     link = best_book.link
+    description = best_book.description
+    image = best_book.image
     print(title)
-    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn)
+    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn, description = description, image = image)
 
 @app.route("/api/search/book", methods=["POST"])
 def search_book_api():
@@ -143,6 +145,8 @@ def go(data):
                 found_book = book_finder.find_cheapest_book(isbn)
                 if found_book != None:
                     best_book = found_book
+                    best_book.description = book_results[0].get('description', 'No description available.')
+                    best_book.image = book_results[0].get('thumbnail', '')
                     socketio.emit('redirect', url_for('results_page'))
         except Exception as e:
             logging.error(f"Error updating best_book: {str(e)}")

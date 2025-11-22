@@ -115,7 +115,7 @@ class GoogleBooksAPI:
                 'isbn': isbn,  # Primary ISBN for searching
                 'published_date': published_date,
                 'publisher': publisher,
-                'description': description[:500] + '...' if len(description) > 500 else description,
+                'description': description,
                 'page_count': page_count,
                 'thumbnail': thumbnail,
                 'google_books_link': google_books_link,
