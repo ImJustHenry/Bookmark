@@ -16,10 +16,20 @@ import google_books_api
 import book
 from ai import get_recommendations
 
-base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
-template_dir = os.path.join(base_dir,"templates") 
-static_dir = os.path.join(base_dir,"static")
-app = Flask(__name__, template_folder=template_dir,static_folder=static_dir)
+# Calculate base directory - try multiple strategies for CI compatibility
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+# Fallback if templates not found in expected location
+if not os.path.exists(os.path.join(base_dir, "templates")):
+    # Try current working directory
+    if os.path.exists(os.path.join(os.getcwd(), "templates")):
+        base_dir = os.getcwd()
+    # Try parent of current working directory
+    elif os.path.exists(os.path.join(os.path.join(os.getcwd(), ".."), "templates")):
+        base_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+
+template_dir = os.path.join(base_dir, "templates")
+static_dir = os.path.join(base_dir, "static")
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 socketio=SocketIO(app)
 
 # Initialize book search service
