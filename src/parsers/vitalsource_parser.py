@@ -46,12 +46,45 @@ def parse(isbn):
         
         # Strategy 3: Look for JSON data embedded in script tags (React component data)
         # Try this even if product_result exists, as JSON might be more reliable
-        script_tags = soup.find_all('script', type='application/json')
-        for script in script_tags:
+        # Collect all potential script tags with JSON data
+        script_tags = []
+        # Scripts with type='application/json'
+        script_tags.extend(soup.find_all('script', type='application/json'))
+        # Scripts with class containing 'js-react-on-rails-component'
+        script_tags.extend(soup.find_all('script', class_=re.compile(r'js-react-on-rails-component', re.I)))
+        # All script tags (as fallback)
+        all_scripts = soup.find_all('script')
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_scripts = []
+        for script in script_tags + all_scripts:
+            script_id = id(script)
+            if script_id not in seen:
+                seen.add(script_id)
+                unique_scripts.append(script)
+        
+        for script in unique_scripts:
             try:
-                if not script.string:
+                script_content = script.string
+                if not script_content:
                     continue
-                data = json.loads(script.string)
+                
+                # Try to parse as JSON
+                try:
+                    data = json.loads(script_content)
+                except (json.JSONDecodeError, ValueError):
+                    # If not valid JSON, try to extract JSON from the string
+                    # Look for JSON-like patterns
+                    json_match = re.search(r'\{[^{}]*"assetProps"[^{}]*\}', script_content)
+                    if json_match:
+                        try:
+                            data = json.loads(json_match.group())
+                        except (json.JSONDecodeError, ValueError):
+                            continue
+                    else:
+                        continue
+                
                 # Look for product data in various formats
                 if 'assetProps' in data or 'formattedPrice' in data:
                     # Found product data in JSON, extract it
@@ -78,7 +111,7 @@ def parse(isbn):
                                     medium=book.Medium.EBOOK
                                 )
                 # Also check for minPrice as fallback
-                elif 'minPrice' in data:
+                if 'minPrice' in data:
                     min_price = data.get('minPrice', '')
                     if min_price:
                         try:
@@ -98,7 +131,7 @@ def parse(isbn):
                             )
                         except (ValueError, TypeError):
                             pass
-            except (json.JSONDecodeError, ValueError, KeyError, AttributeError):
+            except (json.JSONDecodeError, ValueError, KeyError, AttributeError, TypeError):
                 continue
         
         if not product_result:
