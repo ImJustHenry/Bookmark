@@ -4,7 +4,13 @@ from dotenv import load_dotenv
 import json
 
 load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+def get_client():
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return None
+    return genai.Client(api_key=api_key)
+
 
 def get_recommendations(previous_searches, current_book, num_recs=5):
     if not previous_searches:
@@ -29,13 +35,17 @@ def get_recommendations(previous_searches, current_book, num_recs=5):
 
     recent_searches = previous_searches[-5:]
     books_list = recent_searches + [current_book]
-
     prompt = (
         f"Recommend {num_recs} books based on the following books: "
         f"{', '.join(books_list)}. "
         "Provide your recommendations in JSON format like this:\n"
         '[{"title": "Book Title 1", "summary": "Short summary"}, ...]'
     )
+
+    client = get_client()
+
+    if client is None:
+        return [{"title": current_book, "summary": "No AI recommendations available."}]
 
     try:
         response = client.models.generate_content(
@@ -47,12 +57,12 @@ def get_recommendations(previous_searches, current_book, num_recs=5):
 
         if text.startswith("```") and text.endswith("```"):
             text = "\n".join(text.split("\n")[1:-1])
+
         try:
             recommendations = json.loads(text)
         except json.JSONDecodeError:
             recommendations = []
-            lines = text.split("\n")
-            for line in lines:
+            for line in text.split("\n"):
                 if not line.strip():
                     continue
                 parts = line.split("Summary:")
@@ -65,8 +75,8 @@ def get_recommendations(previous_searches, current_book, num_recs=5):
             recommendations = [{"title": current_book, "summary": "No AI recommendations available."}]
 
     except Exception as e:
-        recommendations = [{"title": current_book, "summary": "No AI recommendations available."}]
         print(f"AI recommendation error: {e}")
+        recommendations = [{"title": current_book, "summary": "No AI recommendations available."}]
 
     return recommendations
 
