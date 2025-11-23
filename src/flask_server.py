@@ -14,6 +14,7 @@ from book_search_service import BookSearchService, search_book_by_name, search_b
 import book_finder
 import google_books_api
 import book
+from ai import get_recommendations
 
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
 template_dir = os.path.join(base_dir,"templates") 
@@ -28,7 +29,7 @@ book_search_service = BookSearchService()
 logging.basicConfig(level=logging.INFO)
 
 # Global variable for best book (from main branch)
-best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN)
+best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN, "")
 
 @app.route("/")
 def home(): #renamed this from "results" to "home" for clarity
@@ -48,8 +49,10 @@ def results_page():
     isbn = best_book.isbn
     price = best_book.price
     link = best_book.link
+    description = best_book.description
+    image = best_book.image
     print(title)
-    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn)
+    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn, description = description, image = image)
 
 @app.route("/api/search/book", methods=["POST"])
 def search_book_api():
@@ -143,6 +146,8 @@ def go(data):
                 found_book = book_finder.find_cheapest_book(isbn)
                 if found_book != None:
                     best_book = found_book
+                    best_book.description = book_results[0].get('description', 'No description available.')
+                    best_book.image = book_results[0].get('thumbnail', '')
                     socketio.emit('redirect', url_for('results_page'))
         except Exception as e:
             logging.error(f"Error updating best_book: {str(e)}")
@@ -150,6 +155,21 @@ def go(data):
     except Exception as e:
         logging.error(f"SocketIO search error: {str(e)}")
         emit("search_error", {"error": f"Search failed: {str(e)}"})
+
+@socketio.on('get_ai_recommendations')
+def handle_ai_recommendations(data):
+    logging.info(f"AI request received: {data}")
+    current_book = data['currentBook']
+    history = data['history'] 
+
+    try:
+        recommendations = get_recommendations(history, current_book)
+        logging.info(f"Recommendations: {recommendations}")
+        emit('ai_recommendations', recommendations)
+    except Exception as e:
+        logging.error(f"AI error: {str(e)}")
+        emit('ai_error', str(e))
+
 
 # Prevents the server from starting during tests or imports
 if __name__ == "__main__":

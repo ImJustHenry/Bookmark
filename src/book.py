@@ -13,7 +13,7 @@ class Medium(Enum):
     INTERACTIVE = 3
 
 class Book:
-    def __init__(self, link: str, title: str, isbn: int, price: float, condition: Condition, medium: Medium):
+    def __init__(self, link: str, title: str, isbn: int, price: float, condition: Condition, medium: Medium, description: str = "No description available.", image: str = ""):
         self.link=link
         self.title=title
         self.isbn=isbn
