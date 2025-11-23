@@ -16,16 +16,18 @@ import google_books_api
 import book
 from ai import get_recommendations
 
-# Calculate base directory - try multiple strategies for CI compatibility
+# Calculate base directory - use file location for reliability
+# flask_server.py is in src/, so go up one level to get project root
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-# Fallback if templates not found in expected location
+# Fallback: try current working directory if templates not found
 if not os.path.exists(os.path.join(base_dir, "templates")):
-    # Try current working directory
-    if os.path.exists(os.path.join(os.getcwd(), "templates")):
-        base_dir = os.getcwd()
-    # Try parent of current working directory
-    elif os.path.exists(os.path.join(os.path.join(os.getcwd(), ".."), "templates")):
-        base_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+    # In CI, templates might be in current working directory
+    cwd = os.getcwd()
+    if os.path.exists(os.path.join(cwd, "templates")):
+        base_dir = cwd
+    # Or try parent of cwd
+    elif os.path.exists(os.path.join(os.path.dirname(cwd), "templates")):
+        base_dir = os.path.dirname(cwd)
 
 template_dir = os.path.join(base_dir, "templates")
 static_dir = os.path.join(base_dir, "static")
