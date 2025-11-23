@@ -43,6 +43,14 @@ class TestServer(unittest.TestCase):
     def test_results_with_query_parameter(self):
         response = self.client.get("/results?query=test")
         self.assertIn(response.status_code, [200,400])
+
+    def test_empty_query_handling(self):
+        response = self.client.get("/results?query=")
+        self.assertIn(response.status_code, [200, 400])
+
+    def test_nonexistent_page_404(self):
+        response = self.client.get("/nonexistent-page")
+        self.assertEqual(response.status_code, 404)
         
 if __name__ == "__main__":
     unittest.main()
