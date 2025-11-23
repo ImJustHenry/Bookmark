@@ -16,10 +16,22 @@ import google_books_api
 import book
 from ai import get_recommendations
 
-base_dir = os.path.abspath(os.path.join(os.getcwd(), "..")) 
-template_dir = os.path.join(base_dir,"templates") 
-static_dir = os.path.join(base_dir,"static")
-app = Flask(__name__, template_folder=template_dir,static_folder=static_dir)
+# Calculate base directory - use file location for reliability
+# flask_server.py is in src/, so go up one level to get project root
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+# Fallback: try current working directory if templates not found
+if not os.path.exists(os.path.join(base_dir, "templates")):
+    # In CI, templates might be in current working directory
+    cwd = os.getcwd()
+    if os.path.exists(os.path.join(cwd, "templates")):
+        base_dir = cwd
+    # Or try parent of cwd
+    elif os.path.exists(os.path.join(os.path.dirname(cwd), "templates")):
+        base_dir = os.path.dirname(cwd)
+
+template_dir = os.path.join(base_dir, "templates")
+static_dir = os.path.join(base_dir, "static")
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 socketio=SocketIO(app)
 
 # Initialize book search service
@@ -49,8 +61,9 @@ def results_page():
     isbn = best_book.isbn
     price = best_book.price
     link = best_book.link
-    description = best_book.description
-    image = best_book.image
+    # Use getattr with defaults in case attributes don't exist
+    description = getattr(best_book, 'description', 'No description available.')
+    image = getattr(best_book, 'image', '')
     print(title)
     return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn, description = description, image = image)
 
