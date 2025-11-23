@@ -49,8 +49,9 @@ def results_page():
     isbn = best_book.isbn
     price = best_book.price
     link = best_book.link
-    description = best_book.description
-    image = best_book.image
+    # Use getattr with defaults in case attributes don't exist
+    description = getattr(best_book, 'description', 'No description available.')
+    image = getattr(best_book, 'image', '')
     print(title)
     return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn, description = description, image = image)
 
