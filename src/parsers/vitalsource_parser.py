@@ -45,37 +45,61 @@ def parse(isbn):
             product_result = soup.find('li', class_=re.compile(r'product', re.I))
         
         # Strategy 3: Look for JSON data embedded in script tags (React component data)
-        if not product_result:
-            script_tags = soup.find_all('script', type='application/json', class_=re.compile(r'js-react-on-rails-component', re.I))
-            for script in script_tags:
-                try:
-                    data = json.loads(script.string)
-                    if 'assetProps' in data or 'formattedPrice' in data:
-                        # Found product data in JSON, extract it
-                        asset_props = data.get('assetProps', {})
-                        if asset_props:
-                            title = asset_props.get('title', '')
-                            price_str = data.get('formattedPrice', '')
-                            product_url = data.get('productUrl', '')
-                            
-                            if title and price_str:
-                                # Extract price from formatted string like "$52.99 USD"
-                                price_match = re.search(r'[\d,]+\.?\d*', price_str.replace('$', '').replace('USD', '').replace(',', ''))
-                                if price_match:
-                                    price = float(price_match.group())
-                                    link = f"https://www.vitalsource.com{product_url}" if product_url and not product_url.startswith('http') else (product_url if product_url else search_url)
-                                    isbn_int = int(str(isbn).replace('-', '').replace(' ', ''))
-                                    
-                                    return book.Book(
-                                        link=link,
-                                        title=title,
-                                        isbn=isbn_int,
-                                        price=price,
-                                        condition=book.Condition.UNKNOWN,
-                                        medium=book.Medium.EBOOK
-                                    )
-                except (json.JSONDecodeError, ValueError, KeyError):
+        # Try this even if product_result exists, as JSON might be more reliable
+        script_tags = soup.find_all('script', type='application/json')
+        for script in script_tags:
+            try:
+                if not script.string:
                     continue
+                data = json.loads(script.string)
+                # Look for product data in various formats
+                if 'assetProps' in data or 'formattedPrice' in data:
+                    # Found product data in JSON, extract it
+                    asset_props = data.get('assetProps', {})
+                    if asset_props:
+                        title = asset_props.get('title', '')
+                        price_str = data.get('formattedPrice', '')
+                        product_url = data.get('productUrl', '')
+                        
+                        if title and price_str:
+                            # Extract price from formatted string like "$52.99 USD"
+                            price_match = re.search(r'[\d,]+\.?\d*', price_str.replace('$', '').replace('USD', '').replace(',', ''))
+                            if price_match:
+                                price = float(price_match.group())
+                                link = f"https://www.vitalsource.com{product_url}" if product_url and not product_url.startswith('http') else (product_url if product_url else search_url)
+                                isbn_int = int(str(isbn).replace('-', '').replace(' ', ''))
+                                
+                                return book.Book(
+                                    link=link,
+                                    title=title,
+                                    isbn=isbn_int,
+                                    price=price,
+                                    condition=book.Condition.UNKNOWN,
+                                    medium=book.Medium.EBOOK
+                                )
+                # Also check for minPrice as fallback
+                elif 'minPrice' in data:
+                    min_price = data.get('minPrice', '')
+                    if min_price:
+                        try:
+                            price = float(str(min_price).replace(',', ''))
+                            title = data.get('assetProps', {}).get('title', 'Book (Vitalsource)')
+                            product_url = data.get('productUrl', '')
+                            link = f"https://www.vitalsource.com{product_url}" if product_url and not product_url.startswith('http') else (product_url if product_url else search_url)
+                            isbn_int = int(str(isbn).replace('-', '').replace(' ', ''))
+                            
+                            return book.Book(
+                                link=link,
+                                title=title,
+                                isbn=isbn_int,
+                                price=price,
+                                condition=book.Condition.UNKNOWN,
+                                medium=book.Medium.EBOOK
+                            )
+                        except (ValueError, TypeError):
+                            pass
+            except (json.JSONDecodeError, ValueError, KeyError, AttributeError):
+                continue
         
         if not product_result:
             raise book.BookError("No product results found on Vitalsource")
@@ -106,7 +130,7 @@ def parse(isbn):
                 except ValueError:
                     pass
         
-        # Strategy 2: Look for any text containing "$" and numbers
+        # Strategy 2: Look for any text containing "$" and numbers in product_result
         if price is None:
             price_elements = product_result.find_all(string=re.compile(r'\$\s*[\d,]+\.?\d*'))
             for price_elem in price_elements:
@@ -132,6 +156,58 @@ def parse(isbn):
                             break
                         except ValueError:
                             continue
+        
+        # Strategy 4: Search entire product_result HTML for price patterns
+        if price is None:
+            product_html = str(product_result)
+            # Look for patterns like "$52.99", "$52.99 USD", "52.99", etc.
+            price_patterns = [
+                r'\$\s*([\d,]+\.?\d*)',
+                r'([\d,]+\.?\d*)\s*USD',
+                r'price[:\s]*\$?\s*([\d,]+\.?\d*)',
+            ]
+            for pattern in price_patterns:
+                matches = re.findall(pattern, product_html, re.IGNORECASE)
+                for match in matches:
+                    try:
+                        price_val = float(match.replace(',', ''))
+                        if 1.0 <= price_val <= 10000.0:  # Reasonable price range
+                            price = price_val
+                            break
+                    except ValueError:
+                        continue
+                if price:
+                    break
+        
+        # Strategy 5: Look for divs with price-related classes or data attributes
+        if price is None:
+            price_divs = product_result.find_all(['div', 'span'], class_=re.compile(r'price|cost|amount', re.I))
+            for div in price_divs:
+                div_text = div.get_text(strip=True)
+                price_match = re.search(r'[\d,]+\.?\d*', div_text.replace('$', '').replace('USD', '').replace(',', ''))
+                if price_match:
+                    try:
+                        price_val = float(price_match.group())
+                        if 1.0 <= price_val <= 10000.0:
+                            price = price_val
+                            break
+                    except ValueError:
+                        continue
+        
+        # Strategy 6: If still no price, search the entire document (fallback for CI/different HTML)
+        if price is None:
+            # Look for any price-like patterns in the entire HTML
+            all_text = soup.get_text()
+            # Find all dollar amounts
+            dollar_matches = re.findall(r'\$\s*([\d,]+\.?\d*)', all_text)
+            for match in dollar_matches:
+                try:
+                    price_val = float(match.replace(',', ''))
+                    if 1.0 <= price_val <= 10000.0:  # Reasonable price range
+                        price = price_val
+                        break
+                except ValueError:
+                    continue
         
         # Extract product link from <a> tag with href containing "/products/"
         link = search_url  # Default to search URL
