@@ -1,12 +1,22 @@
 import unittest
-import sys, os
+import sys
+import os
+
+# Ensure we can find src directory
 sys.path.insert(0, os.path.abspath("./src"))
+
+# Set working directory to project root for template access
+# This ensures templates are found in both local and CI environments
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+os.chdir(project_root)
 
 from flask_server import app
 
 class TestServer(unittest.TestCase):
     #Set up Flask test client for each test.
     def setUp(self):
+        # Ensure we're in the project root directory
+        os.chdir(project_root)
         self.client = app.test_client()
 
     def test_app_starts(self):

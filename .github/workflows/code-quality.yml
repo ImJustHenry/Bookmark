@@ -1,0 +1,42 @@
+name: Code Quality
+
+on:
+    pull_request:
+        branches: [ main, vitalsource, google-books ]
+    workflow_dispatch:
+
+jobs:
+    check-imports:
+        name: Check Import Organization
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.10'
+            - name: Check for unused imports
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install vulture
+                  # Check for dead code (optional, may have false positives)
+                  vulture src/ --min-confidence 60 || true
+
+    check-formatting:
+        name: Check Code Formatting
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.10'
+            - name: Check code formatting
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install black
+                  # Check if code is formatted (don't modify, just check)
+                  black --check src/ tests/ || echo "⚠️  Code formatting issues found. Run 'black src/ tests/' to fix."
+
