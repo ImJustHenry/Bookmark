@@ -69,20 +69,18 @@ def test_case_1_book_name_search():
             print(f"   - Found {len(books)} books")
             print(f"   - All books have required fields (title, author, ISBN)")
             print(f"   - Source correctly identified as 'Google Books'")
-            return True
         else:
             print(f"⚠️  No books found (this might be expected)")
             print(f"✅ TEST CASE 1 PASSED (but no results)")
-            return True
             
     except AssertionError as e:
         print(f"❌ TEST CASE 1 FAILED: Assertion error - {e}")
-        return False
+        raise
     except Exception as e:
         print(f"❌ TEST CASE 1 FAILED: Unexpected error - {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 def test_case_2_isbn_search():
     """
@@ -133,21 +131,19 @@ def test_case_2_isbn_search():
             print(f"   - Book found with matching ISBN")
             print(f"   - All required fields present (title, author, ISBN)")
             print(f"   - Source correctly identified as 'Google Books'")
-            return True
         else:
             print(f"⚠️  No book found for ISBN {test_isbn}")
             print(f"   This might be expected if the ISBN is not in Google Books database")
             print(f"✅ TEST CASE 2 PASSED (but no results)")
-            return True
             
     except AssertionError as e:
         print(f"❌ TEST CASE 2 FAILED: Assertion error - {e}")
-        return False
+        raise
     except Exception as e:
         print(f"❌ TEST CASE 2 FAILED: Unexpected error - {e}")
         import traceback
         traceback.print_exc()
-        return False
+        raise
 
 def check_google_books_api():
     """Check if Google Books API is accessible"""
