@@ -141,6 +141,13 @@
                 transform: translateY(-2px);
             }
 
+            .favoriteStar {
+                width: 10px;
+                height: 10px;
+                object-fit: contain;
+                transition: transform 0.2s;
+            }
+
             /* Other Buttons and Text */
 
             .submitButton {
@@ -170,6 +177,28 @@
             .goToSiteButton:hover {
                 transform: scale(1.05);
                 opacity: 0.9;
+            }
+
+            .favoriteButton {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 10px;
+                width: 20px;
+                height: 20px;
+                background-image: url("{{ url_for('static', filename='starInactive.png') }}");
+                background-size: contain;
+                background-position: center;
+                transition: transform 0.2s, opacity 0.2s;
+            }
+
+            .favoriteButton:hover {
+                transform: scale(1.1);
+                opacity: 0.9;
+            }
+
+            .favoriteButton.active {
+                background-image: url("{{ url_for('static', filename='starActive.png') }}");
             }
 
             .header {
@@ -246,14 +275,9 @@
                             <button type="button" class="goToSiteButton">Go to store</button>
                         </a>
                     </div>
-                </div>
-                <div class="priceElement">
-                    <h3>Website 2:</h3>
-                    <p>$22.99</p>
-                </div>
-                <div class="priceElement">
-                    <h3>Website so on and so on...</h3>
-                    <p>$1,000,000.00</p>
+                    <div class="favoriteButton">
+                        <button type="button" class ="favoriteStar"></button>
+                    </div>
                 </div>
             </div>
         </div>
