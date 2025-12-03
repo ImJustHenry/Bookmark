@@ -32,6 +32,15 @@ def parse(isbn):
         book.BookError: If book is not found or parsing fails
     """
     try:
+        # Validate ISBN format early to avoid unnecessary network requests
+        isbn_str = str(isbn).replace('-', '').replace(' ', '')
+        try:
+            isbn_int = int(isbn_str)
+            if isbn_int <= 0 or len(isbn_str) not in [10, 13]:
+                raise book.BookError(f"Invalid ISBN format: {isbn}")
+        except (ValueError, TypeError):
+            raise book.BookError(f"Invalid ISBN format: {isbn}")
+        
         search_url = search_textbookx(isbn)
         
         # Use the correct TextbookX search URL
@@ -212,11 +221,13 @@ def parse(isbn):
         if price is None:
             raise book.BookError("Price not found on TextbookX")
         
-        if not title or len(title) < 3:
-            title = "Book (TextbookX)"
-        
-        # Convert isbn to int if it's a string
-        isbn_int = int(str(isbn).replace('-', '').replace(' ', ''))
+        # Validate that we have a meaningful title (not just a fallback)
+        if not title or len(title) < 3 or title == "Book (TextbookX)":
+            # If we only have a fallback title and no real book data, it's likely not a valid result
+            # Check if we have other indicators of a real book
+            if price is None or link == search_url:
+                raise book.BookError("No valid book found on TextbookX")
+            title = "Book (TextbookX)"  # Use fallback only if we have price/link
         
         # Create and return Book object
         # TextbookX typically sells physical books, but could be either
