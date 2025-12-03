@@ -38,24 +38,34 @@ def parse(isbn):
         search_url = search_textbookx(isbn)
         
         # Try multiple URL formats if the first one fails
+        # TextbookX may use different search mechanisms
         url_formats = [
             f"https://www.textbookx.com/search?q={isbn}",
             f"https://www.textbookx.com/search/?q={isbn}",
             f"https://www.textbookx.com/textbooks?q={isbn}",
             f"https://www.textbookx.com/textbooks/?q={isbn}",
+            f"https://www.textbookx.com/catalogsearch/result/?q={isbn}",
+            f"https://www.textbookx.com/index.php?route=product/search&search={isbn}",
         ]
         
         html_string = None
+        last_error = None
         for url_format in url_formats:
             try:
                 html_string = fetch_html(url=url_format)
-                search_url = url_format  # Update to successful URL
-                break
-            except Exception:
+                # Check if we got a valid HTML response (not 404 page)
+                if html_string and len(html_string) > 1000 and "404" not in html_string[:500].lower():
+                    search_url = url_format  # Update to successful URL
+                    break
+                else:
+                    html_string = None  # Reset if it's a 404 page
+            except Exception as e:
+                last_error = str(e)
                 continue
         
         if html_string is None:
-            raise book.BookError("Could not access TextbookX search page")
+            # If all URLs failed, raise BookError with informative message
+            raise book.BookError(f"Could not access TextbookX search page. TextbookX may not support ISBN search or the site structure has changed.")
         
         soup = BeautifulSoup(html_string, 'html.parser')
         
