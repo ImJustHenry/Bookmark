@@ -1,9 +1,12 @@
 import sys
-PARSER_PATH = "./parsers/"
-parser_modules = []
-sys.path.insert(0,PARSER_PATH)
-import importlib
 import os
+
+# Get the directory where this file is located
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+PARSER_PATH = os.path.join(_current_dir, "parsers")
+parser_modules = []
+sys.path.insert(0, PARSER_PATH)
+import importlib
 
 
 def import_parsers():
