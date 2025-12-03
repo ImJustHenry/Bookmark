@@ -14,12 +14,9 @@ def search_textbookx(isbn):
         str: URL to search TextbookX
     """
     isbn_str = str(isbn).strip()
-    # TextbookX search URL format - try multiple possible formats
-    # Format 1: Standard search with query parameter (most common)
-    # Format 2: Alternative with /search/ path
-    # Format 3: Direct ISBN search
-    # We'll try the most common format first
-    return f"https://www.textbookx.com/search?q={isbn_str}"
+    # TextbookX uses /fastsearch2.php with 's' parameter for search
+    # This is the actual search form action found on their homepage
+    return f"https://www.textbookx.com/fastsearch2.php?s={isbn_str}"
 
 def parse(isbn):
     """
@@ -37,35 +34,18 @@ def parse(isbn):
     try:
         search_url = search_textbookx(isbn)
         
-        # Try multiple URL formats if the first one fails
-        # TextbookX may use different search mechanisms
-        url_formats = [
-            f"https://www.textbookx.com/search?q={isbn}",
-            f"https://www.textbookx.com/search/?q={isbn}",
-            f"https://www.textbookx.com/textbooks?q={isbn}",
-            f"https://www.textbookx.com/textbooks/?q={isbn}",
-            f"https://www.textbookx.com/catalogsearch/result/?q={isbn}",
-            f"https://www.textbookx.com/index.php?route=product/search&search={isbn}",
-        ]
-        
-        html_string = None
-        last_error = None
-        for url_format in url_formats:
-            try:
-                html_string = fetch_html(url=url_format)
-                # Check if we got a valid HTML response (not 404 page)
-                if html_string and len(html_string) > 1000 and "404" not in html_string[:500].lower():
-                    search_url = url_format  # Update to successful URL
-                    break
-                else:
-                    html_string = None  # Reset if it's a 404 page
-            except Exception as e:
-                last_error = str(e)
-                continue
-        
-        if html_string is None:
-            # If all URLs failed, raise BookError with informative message
-            raise book.BookError(f"Could not access TextbookX search page. TextbookX may not support ISBN search or the site structure has changed.")
+        # Use the correct TextbookX search URL
+        try:
+            html_string = fetch_html(url=search_url)
+            # Check if we got a valid HTML response (not 404 or error page)
+            if not html_string or len(html_string) < 1000:
+                raise book.BookError("Received empty or invalid response from TextbookX")
+            if "404" in html_string[:1000].lower() or "not found" in html_string[:1000].lower():
+                raise book.BookError("Book not found on TextbookX")
+        except book.BookError:
+            raise
+        except Exception as e:
+            raise book.BookError(f"Could not access TextbookX search page: {str(e)}")
         
         soup = BeautifulSoup(html_string, 'html.parser')
         
