@@ -11,7 +11,7 @@ import pickle
 import os
 import uuid
 import logging
-#from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
+from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
 import book_finder
 import google_books_api
 import book
@@ -124,17 +124,12 @@ def load_screen():
 
 @socketio.on("Go_button_pushed")
 def go(data):
-    resp = make_response(render_template("index.html"))
-
-    socketio.emit('redirect', url_for('load_screen'))
-    """Handle real-time search requests via SocketIO"""
-   
-    session_id = request.cookies.get("session_id")
+    session_id = request.cookies.get("session_id") 
     user_search = data.get("search", "").strip()
     
-    if not user_search:
-        emit("search_error", {"error": "Please enter a book name or ISBN"})
-        return
+    # if not user_search:
+    #     emit("search_error", {"error": "Please enter a book name or ISBN"})
+    #     return
     
     logging.info(f"[Session {session_id}] User searched for: {user_search}")
     
@@ -153,7 +148,7 @@ def go(data):
             best_book.description = book_results[0].get('description', 'No description available.')
             best_book.image = book_results[0].get('thumbnail', '')
             best_book_pickle_str = base64.b64encode(pickle.dumps(best_book)).decode('ascii')
-            resp.set_cookie("best_book", best_book_pickle_str, max_age=60*60*24) # When cookie expires
+            socketio.emit('set_best_book_cookie', best_book_pickle_str)
             socketio.emit('redirect', url_for('results_page'))
    
 """    

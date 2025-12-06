@@ -49,9 +49,9 @@ document.getElementById('go_button').addEventListener("click", () => {
     document.getElementById("loading-screen-overlay").style.display = "flex";
 
     // redirect to results page route
-    setTimeout(() => {
-        window.location.href = "/results?query=" + encodeURIComponent(query);
-    },500);
+    socket.on('redirect', (url) => {
+        window.location.href = url;
+    });
 });
 
 // ENTER key triggers search
@@ -61,3 +61,8 @@ document.getElementById("search_input").addEventListener("keydown", (e) => {
         document.getElementById("go_button").click();
     }
 });
+
+socket.on('set_best_book_cookie', (data) => {
+    document.cookie = "best_book=" + encodeURIComponent(data) + "; max-age=" + (60*60*24) + "; path=/";
+    console.log("Best book cookie set via SocketIO");
+})
