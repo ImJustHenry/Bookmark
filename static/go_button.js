@@ -11,21 +11,21 @@ function updateHistoryDisplay() {
     });
 }
 
-document.getElementById('go_button').addEventListener('click', () => {
-    const searchInput = document.getElementById('search_input').value.trim();
-    if (!searchInput) return;
+//document.getElementById('go_button').addEventListener('click', () => {
+    //const searchInput = document.getElementById('search_input').value.trim();
+    //if (!searchInput) return;
 
     // Add to localStorage
-    let searches = JSON.parse(localStorage.getItem("searches") || "[]");
-    searches.push(searchInput);
-    localStorage.setItem("searches", JSON.stringify(searches));
+    //let searches = JSON.parse(localStorage.getItem("searches") || "[]");
+    //searches.push(searchInput);
+    //localStorage.setItem("searches", JSON.stringify(searches));
 
-    updateHistoryDisplay();
+    //updateHistoryDisplay();
 
-    socket.emit('Go_button_pushed', { search: searchInput });
+    //socket.emit('Go_button_pushed', { search: searchInput });
 
-    document.getElementById('search_input').value = "";
-});
+    //document.getElementById('search_input').value = "";
+//});
 
 document.getElementById('go_button').addEventListener("click", () => {
     const query = document.getElementById("search_input").value.trim();
@@ -51,7 +51,7 @@ document.getElementById('go_button').addEventListener("click", () => {
     // redirect to results page route
     setTimeout(() => {
         window.location.href = "/results?query=" + encodeURIComponent(query);
-    },150);
+    },500);
 });
 
 // ENTER key triggers search

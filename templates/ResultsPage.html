@@ -46,7 +46,7 @@
             .rightContent {
                 display: grid;
                 grid-template-rows: auto auto auto;
-                gap: 25px;
+                gap: 12px;
             }
 
             /* Content */
@@ -114,7 +114,7 @@
             .bookInfo {
                 background: white;
                 border-radius: 32px;
-                padding: 20px;
+                padding: 14px 18px;
                 text-align: center;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.25);
             }
@@ -131,7 +131,7 @@
                 margin-bottom: 10px;
                 background: white;
                 border-radius: 32px;
-                padding: 20px;
+                padding: 16px 20px;
                 text-align: center;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.25);
                 transition: transform 0.5s;
@@ -139,6 +139,13 @@
 
             .priceElement:hover {
                 transform: translateY(-2px);
+            }
+
+            .favoriteStar {
+                width: 10px;
+                height: 10px;
+                object-fit: contain;
+                transition: transform 0.2s;
             }
 
             /* Other Buttons and Text */
@@ -170,6 +177,28 @@
             .goToSiteButton:hover {
                 transform: scale(1.05);
                 opacity: 0.9;
+            }
+
+            .favoriteButton {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 10px;
+                width: 20px;
+                height: 20px;
+                background-image: url("{{ url_for('static', filename='starInactive.png') }}");
+                background-size: contain;
+                background-position: center;
+                transition: transform 0.2s, opacity 0.2s;
+            }
+
+            .favoriteButton:hover {
+                transform: scale(1.1);
+                opacity: 0.9;
+            }
+
+            .favoriteButton.active {
+                background-image: url("{{ url_for('static', filename='starActive.png') }}");
             }
 
             .header {
@@ -246,14 +275,9 @@
                             <button type="button" class="goToSiteButton">Go to store</button>
                         </a>
                     </div>
-                </div>
-                <div class="priceElement">
-                    <h3>Website 2:</h3>
-                    <p>$22.99</p>
-                </div>
-                <div class="priceElement">
-                    <h3>Website so on and so on...</h3>
-                    <p>$1,000,000.00</p>
+                    <div class="favoriteButton">
+                        <button type="button" class ="favoriteStar"></button>
+                    </div>
                 </div>
             </div>
         </div>
