@@ -51,6 +51,17 @@ class TestServer(unittest.TestCase):
     def test_nonexistent_page_404(self):
         response = self.client.get("/nonexistent-page")
         self.assertEqual(response.status_code, 404)
+
+    def test_homepage_has_go_button(self):
+        response = self.client.get("/")
+        self.assertIn(b'id="go_button"', response.data)
         
+    def test_results_page_has_basic_structure(self):
+        response = self.client.get("/results?query=test")
+        if response.status_code == 200:
+            self.assertIn(b"<html", response.data)
+            self.assertIn(b"</html>", response.data)
+
+
 if __name__ == "__main__":
     unittest.main()
