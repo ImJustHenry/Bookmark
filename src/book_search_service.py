@@ -1,8 +1,6 @@
 from typing import Dict, List, Optional, Union
 import logging
 from google_books_api import GoogleBooksAPI, search_books_by_name
-from improved_chegg_scraper import ImprovedCheggScraper
-from parsers.abebook_parser import parse_abebooks_prices
 from fetch_html import fetch_html
 from book import Book, Condition, Medium
 
@@ -13,7 +11,6 @@ class BookSearchService:
     
     def __init__(self):
         self.google_books = GoogleBooksAPI()
-        self.chegg_scraper = ImprovedCheggScraper()
         
     def search_by_book_name(self, book_name: str, max_results: int = 3) -> Dict:
         """
@@ -117,82 +114,7 @@ class BookSearchService:
                 'prices': {}
             }
     
-    def _search_prices_by_isbn(self, isbn: str) -> Dict[str, Union[Dict, str]]:
-        """
-        Search for prices on different retailers by ISBN.
-        
-        Args:
-            isbn (str): ISBN number
-            
-        Returns:
-            Dict: Prices from different retailers
-        """
-        prices = {}
-        
-        # Search Chegg
-        try:
-            chegg_result = self.chegg_scraper.get_book_price(isbn)
-            if chegg_result:
-                prices['chegg'] = {
-                    'title': chegg_result.get('title', ''),
-                    'price': chegg_result.get('price', ''),
-                    'availability': chegg_result.get('availability', ''),
-                    'url': chegg_result.get('url', ''),
-                    'source': 'Chegg'
-                }
-            else:
-                prices['chegg'] = 'No results found'
-        except Exception as e:
-            logging.error(f"Chegg search failed for ISBN {isbn}: {str(e)}")
-            prices['chegg'] = f'Search failed: {str(e)}'
-        
-        # Search AbeBooks
-        try:
-            abebooks_result = self._search_abebooks(isbn)
-            if abebooks_result:
-                prices['abebooks'] = abebooks_result
-            else:
-                prices['abebooks'] = 'No results found'
-        except Exception as e:
-            logging.error(f"AbeBooks search failed for ISBN {isbn}: {str(e)}")
-            prices['abebooks'] = f'Search failed: {str(e)}'
-        
-        return prices
-    
-    def _search_abebooks(self, isbn: str) -> Optional[Dict]:
-        """
-        Search AbeBooks for book prices by ISBN.
-        
-        Args:
-            isbn (str): ISBN number
-            
-        Returns:
-            Optional[Dict]: AbeBooks result or None
-        """
-        try:
-            # Try both new and used conditions
-            for condition in ['new', 'used']:
-                url = f"https://www.abebooks.com/servlet/SearchResults?cond={condition}&kn={isbn}"
-                
-                html_content = fetch_html(url)
-                books = parse_abebooks_prices(html_content)
-                
-                if books:
-                    # Return the first (cheapest) result
-                    book = books[0]
-                    return {
-                        'title': book.get('title', ''),
-                        'price': f"${book.get('price', 0):.2f}" if book.get('price') else 'N/A',
-                        'condition': book.get('condition', ''),
-                        'url': url,
-                        'source': 'AbeBooks'
-                    }
-            
-            return None
-            
-        except Exception as e:
-            logging.error(f"AbeBooks search error: {str(e)}")
-            return None
+   
     
     def _find_best_price(self, prices: Dict[str, Union[Dict, str]]) -> Optional[Dict]:
         """
