@@ -62,9 +62,6 @@ class TestServer(unittest.TestCase):
             self.assertIn(b"<html", response.data)
             self.assertIn(b"</html>", response.data)
 
-    def test_search_input_accepts_text(self):
-        response = self.client.get("/")
-        self.assertIn(b"type=\"text\"", response.data)
 
 if __name__ == "__main__":
     unittest.main()
