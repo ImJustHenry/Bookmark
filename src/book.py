@@ -20,6 +20,8 @@ class Book:
         self.price=price
         self.condition=condition
         self.medium=medium
+        self.description=description
+        self.image=image
     
     def __lt__(self,other):
         return self.price < other.price

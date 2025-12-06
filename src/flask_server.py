@@ -7,15 +7,16 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "parsers"))
 
 from flask import Flask, render_template, send_from_directory, request, make_response, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit
+import pickle
 import os
 import uuid
 import logging
-from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
+#from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
 import book_finder
 import google_books_api
 import book
 from ai import get_recommendations
-
+import base64
 # Calculate base directory - use file location for reliability
 # flask_server.py is in src/, so go up one level to get project root
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -35,19 +36,20 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 socketio=SocketIO(app)
 
 # Initialize book search service
-book_search_service = BookSearchService()
+#book_search_service = BookSearchService()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Global variable for best book (from main branch)
-best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN, "")
+# best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN, "")
 
 @app.route("/")
 def home(): #renamed this from "results" to "home" for clarity
     session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     resp = make_response(render_template("index.html"))
     resp.set_cookie("session_id", session_id, max_age=60*60*24) # When cookie expires
+
     return resp
 
 @app.route("/static")
@@ -56,16 +58,12 @@ def getStatic():
 
 @app.route("/results")
 def results_page():
-    global best_book
-    title = best_book.title
-    isbn = best_book.isbn
-    price = best_book.price
-    link = best_book.link
+    best_book_pickle_str = request.cookies.get("best_book")
+    best_book = pickle.loads(base64.b64decode(best_book_pickle_str))
     # Use getattr with defaults in case attributes don't exist
     description = getattr(best_book, 'description', 'No description available.')
     image = getattr(best_book, 'image', '')
-    print(title)
-    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn, description = description, image = image)
+    return render_template("ResultsPage.html", link = best_book.link, title =  best_book.title, price =  best_book.price, isbn =  best_book.isbn, description = description, image = image)
 
 @app.route("/api/search/book", methods=["POST"])
 def search_book_api():
@@ -119,10 +117,18 @@ def health_check():
         "features": ["Google Books", "Chegg", "AbeBooks"]
     })
 
+@app.route("/load")
+def load_screen():
+    return render_template("load.html")
+
+
 @socketio.on("Go_button_pushed")
 def go(data):
+    resp = make_response(render_template("index.html"))
+
+    socketio.emit('redirect', url_for('load_screen'))
     """Handle real-time search requests via SocketIO"""
-    global best_book
+   
     session_id = request.cookies.get("session_id")
     user_search = data.get("search", "").strip()
     
@@ -134,40 +140,27 @@ def go(data):
     
     # Emit search started event
     emit("search_started", {"search_term": user_search})
-    
-    try:
-        # Determine if it's an ISBN or book name
-        isbn_clean = user_search.replace('-', '').replace(' ', '')
-        
-        if isbn_clean.isdigit() and len(isbn_clean) in [10, 13]:
-            # Search by ISBN
-            result = search_book_by_isbn(isbn_clean)
-        else:
-            # Search by book name
-            result = search_book_by_name(user_search)
-        
-        # Emit results
-        emit("search_results", result)
-        
-        # Also update best_book for results page compatibility (from main branch)
-        # Try to find cheapest book using book_finder
-        try:
-            googleBooksAPIObject = google_books_api.GoogleBooksAPI()
-            book_results = googleBooksAPIObject.search_book_by_name(user_search)
-            if book_results and len(book_results) > 0:
-                isbn = book_results[0]['isbn']
-                found_book = book_finder.find_cheapest_book(isbn)
-                if found_book != None:
-                    best_book = found_book
-                    best_book.description = book_results[0].get('description', 'No description available.')
-                    best_book.image = book_results[0].get('thumbnail', '')
-                    socketio.emit('redirect', url_for('results_page'))
-        except Exception as e:
-            logging.error(f"Error updating best_book: {str(e)}")
-        
+  
+
+   # try:
+    googleBooksAPIObject = google_books_api.GoogleBooksAPI()
+    book_results = googleBooksAPIObject.search_book_by_name(user_search)
+    if book_results and len(book_results) > 0:
+        isbn = book_results[0]['isbn']
+        found_book = book_finder.find_cheapest_book(isbn)
+        if found_book != None:
+            best_book = found_book
+            best_book.description = book_results[0].get('description', 'No description available.')
+            best_book.image = book_results[0].get('thumbnail', '')
+            best_book_pickle_str = base64.b64encode(pickle.dumps(best_book)).decode('ascii')
+            resp.set_cookie("best_book", best_book_pickle_str, max_age=60*60*24) # When cookie expires
+            socketio.emit('redirect', url_for('results_page'))
+   
+"""    
     except Exception as e:
         logging.error(f"SocketIO search error: {str(e)}")
         emit("search_error", {"error": f"Search failed: {str(e)}"})
+        """
 
 @socketio.on('get_ai_recommendations')
 def handle_ai_recommendations(data):
