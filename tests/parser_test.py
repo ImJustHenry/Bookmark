@@ -24,7 +24,7 @@ class test_parsers(unittest.TestCase):
         for p in parser_modules:
             with self.subTest(p=p):
                 book_result = p.parse(p.get_test_isbn())
-                self.assertTrue(type(book_result) == book.Book)
+                self.assertIsInstance(book_result, book.Book)
     def test_parsers_error_properly(self):
         import_parsers()
         for p in parser_modules:

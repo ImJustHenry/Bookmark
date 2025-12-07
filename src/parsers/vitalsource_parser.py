@@ -50,8 +50,7 @@ def parse(isbn):
                 continue
         
         if price is None:
-            # Skip this parser if no valid price found
-            return None
+            raise book.BookError("Price not found on Vitalsource")
         
         # Extract product link from <link rel="canonical"> or fallback to search URL
         link_tag = soup.find("link", rel="canonical")
