@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "parsers"))
 
 from flask import Flask, render_template, send_from_directory, request, make_response, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit
+import pickle
 import os
 import uuid
 import logging
@@ -15,7 +16,7 @@ import book_finder
 import google_books_api
 import book
 from ai import get_recommendations
-
+import base64
 # Calculate base directory - use file location for reliability
 # flask_server.py is in src/, so go up one level to get project root
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -45,6 +46,7 @@ def home():
     session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     resp = make_response(render_template("index.html"))
     resp.set_cookie("session_id", session_id, max_age=60*60*24) # When cookie expires
+
     return resp
 
 @app.route("/static")
@@ -153,6 +155,11 @@ def health_check():
         "service": "Bookmark! Book Search API",
         "features": ["Google Books", "Chegg", "AbeBooks"]
     })
+
+@app.route("/load")
+def load_screen():
+    return render_template("load.html")
+
 
 @socketio.on("Go_button_pushed")
 def go(data):
