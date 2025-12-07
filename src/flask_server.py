@@ -215,7 +215,7 @@ def go(data):
         })
 
         # Redirect to results page
-        socketio.emit('redirect', url_for('results_page'))
+        emit('redirect', url_for('results_page'))
 
     except Exception as e:
         logging.error(f"SocketIO search error: {str(e)}")
