@@ -55,7 +55,7 @@ def getStatic():
 
 @app.route("/wishlist")
 def wishlist():
-    return render_template("wishlist.html")
+    return render_template("Wishlist.html")
 
 @app.route("/results")
 def results_page():
