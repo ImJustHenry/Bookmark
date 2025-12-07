@@ -1,224 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookmark! - Find the Best Price!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookmark! - Wishlist</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #a6783c, #f0b86e);
+        min-height: 100vh;
+        padding: 20px;
+    }
 
-    <style>
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    .screen {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-        /*Winows & Containers */
+    .header {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+    }
 
-        body {
-            font-family: "Poppins", sans-serif;
-            background: linear-gradient(135deg, #a6783c, #f0b86e);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    .submitButton {
+        background: linear-gradient(120deg, #22874f, #32c976);
+        border-radius: 30px;
+        width: 100px;
+        height: 50px;
+        border: none;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+    }
 
-        .screen {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            gap: 20px;
-            min-height: 100vh;
-        }
+    .wishlistHeader {
+        font-size: 24px;
+        font-weight: 600;
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
 
-        .mainContainer {
-            display: grid;
-            grid-template-columns: 9fr 7fr;
-            gap: 20px;
-            height: 100%;
-            border-radius: 20px;
-        }
+    .bookGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
 
-        .leftContent {
-            display: grid;
-            grid-template-rows: 9fr 4fr;
-            gap: 20px;
-        }
+    .bookCard {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
 
-        .rightContent {
-            display: grid;
-            grid-template-rows: auto 4fr;
-            gap: 20px;
-        }
+    .bookCard:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
 
-        /* Content */
+    .bookCard img {
+        max-width: 120px;
+        max-height: 160px;
+        margin: 0 auto 15px auto;
+        object-fit: contain;
+    }
 
-        .wishlistHeader {
-            font-size: 22px;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+    .bookCard h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #333;
+    }
 
-        .selectedBookObject {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            margin-bottom: 20px;
-        }
+    .bookCard p {
+        font-size: 16px;
+        color: #444;
+        margin-bottom: 15px;
+    }
 
-        .aiSummary {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+    .price {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #22874f;
+    }
 
-        .bookList {
-            display: grid;
-            grid-template-rows: repeat(auto-fill, 1fr);
-            gap: 20px;
-        }
+    .goToSiteButton,
+    .removeButton {
+        background-color: #e74c3c;
+        border-radius: 30px;
+        padding: 10px 20px;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        margin: 5px 0;
+        width: 100%;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
 
-        .bookListObject {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.5s;
-            margin-bottom: 20px;
-        }
+    .goToSiteButton:hover,
+    .removeButton:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
 
-        .bookListObject:hover {
-            transform: translateY(-2px);
-        }
-
-        .priceElement {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-
-            font-size: 22px;
-            font-weight: bold;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        /* Other Buttons */
-        .submitButton {
-            background: linear-gradient(120deg, #22874f, #32c976);
-            border-radius: 30px;
-            width: 100px;
-            height: 50px;
-            border: none;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
-        }
-
-        .goToSiteButton {
-            display: inline-block;
-            background-color: #e74c3c;
-            border-radius: 30px;
-            padding: 12px 25px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-            width: 100%;
-        }
-
-        .goToSiteButton:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
-
-        .header {
-            display: flex;
-            justify-content: flex-start;
-        }
-
-        h2 {
-            margin-bottom: 15px;
-            color: #333
-        }
-
-        h3 {
-            margin-bottom: 10px;
-            color: #444;
-        }
-
-        p {
-            color: #666;
-            line-height: 1.5;
-        }
-
-    </style>
+    .popup {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #22874f;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+</style>
 </head>
-
 <body>
-    <div class="screen">
-        <nav class="header">
-            <div class="headerButton">
-                <button type="button" class="submitButton">Home</button>
-            </div>
-        </nav>
 
-        <div class="wishlistHeader">
-            <h2>Your Wishlist</h2>
-        </div>
+<div class="screen">
+    <nav class="header">
+        <button type="button" class="submitButton" onclick="location.href='/'">Home</button>
+    </nav>
 
-        <div class="mainContainer">
-            <div class="leftContainer">
-                <div class="selectedBookObject">
-                    <p>image of selected book here</p>
-                </div>
-
-                <div class="aiSummary">
-                    <h2>Summary of Book:</h2>
-                    <p>Ai generated summary of book will go here</p>
-                </div>
-            </div>
-
-            <div class="rightContainer">
-                <div class="bookList">
-                    <div class="bookListObject">
-                        <h3>{{ title }} - {{ isbn }}</h3>
-                        <h4>Best Available Price:</h4>
-                        <div class="priceElement">
-                            <p>$ {{ price }}</p>
-                                <a href="{{ link }}">
-                                    <button type="submit" class="goToSiteButton">Go to store</button>
-                                </a>
-                        </div>
-                    </div>
-
-                    <div class="bookListObject">
-                        <p>For each book on the booklist</p>
-                        <p>A book object will be initialized</p>
-                        <p>In the same way as the one above</p>
-                        <p>After DOMContentLoaded.</p>
-                        <p>Will implement in a later push.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="wishlistHeader">
+        <h2>Your Wishlist</h2>
     </div>
-</body>
-    <script>
-      
 
-    </script>
+    <div class="bookGrid" id="bookListContainer">
+        <!-- Book cards rendered here -->
+    </div>
+</div>
+
+<div id="popupContainer" class="popup"></div>
+
+<script src="/static/wishlist.js"></script>
+</body>
 </html>

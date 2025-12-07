@@ -172,7 +172,7 @@
       <nav class="navbar">
          <a href="/">Home</a>
          <a href="#about">About</a>
-         <a href="#wishlist">Wishlist</a>
+         <a href="{{ url_for('wishlist') }}">Wishlist</a>
       </nav>
    </header>
 
@@ -215,6 +215,7 @@
    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
    <script src = "/static/go_button.js"></script>
    <script src = "/static/redirect.js"></script>
+   
 
 </html>
 
