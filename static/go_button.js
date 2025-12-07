@@ -51,3 +51,8 @@ document.getElementById("search_input").addEventListener("keydown", (e) => {
         document.getElementById("go_button").click();
     }
 });
+
+socket.on('set_best_book_cookie', (data) => {
+    document.cookie = "best_book=" + encodeURIComponent(data) + "; max-age=" + (60*60*24) + "; path=/";
+    console.log("Best book cookie set via SocketIO");
+})
