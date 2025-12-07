@@ -171,6 +171,20 @@
                 transform: translateY(-2px);
             }
 
+            .filter {
+                padding: 8px 12px;
+                margin: 0 5px;
+                border: 1px solid white;
+                border-radius: 20px;
+                background-color: white;
+                font-size: 15px;
+            }
+
+            .filter:focus {
+                outline: none;
+                border-color: #e74c3c;
+            }
+
             /* Other Buttons and Text */
 
             .submitButton {
@@ -268,6 +282,17 @@
                 <div class="textbookContainer">
                     <img src="{{ image }}" alt="{{ title }}" class="textbook-image">
                 </div>
+                <select class="filter" id="conditionFilter">
+                    <option value="">Any Condition</option>
+                    <option value="NEW">New</option>
+                    <option value="USED">Used</option>
+                </select>
+                <select class="filter" id="mediumFilter">
+                    <option value="">Any Medium</option>
+                    <option value="PHYSICAL">Physical</option>
+                    <option value="EBOOK">Ebook</option>
+                    <option value="INTERACTIVE">Interactive</option>
+                </select>
                 <div class="summary-outer">
                     <h2>Summary of Book:</h2>
                     <div class="summary-inner">

@@ -49,6 +49,20 @@
             transition: 0.3s;
          }
 
+         .filter {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: 1px solid white;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 15px;
+         }
+
+         .filter:focus {
+            outline: none;
+            border-color: #e74c3c;
+         }
+
          input {
             width: 450px;
             padding: 14px 20px;
@@ -185,6 +199,17 @@
       <div onsubmit="return false;">
          <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
          <datalist id="history_list"></datalist>
+          <select class="filter" id="conditionFilter">
+            <option value="">Any Condition</option>
+            <option value="NEW">New</option>
+            <option value="USED">Used</option>
+         </select>
+         <select class="filter" id="mediumFilter">
+            <option value="">Any Medium</option>
+            <option value="PHYSICAL">Physical Book</option>
+            <option value="EBOOK">Ebook</option>
+            <option value="INTERACTIVE">Interactive</option>
+         </select>
             <button id="go_button">GO</button>
       </div>
    </section>
