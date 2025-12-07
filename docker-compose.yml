@@ -5,7 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookmark-app
+    image: cosmicorigindev/bookmark:latest
+
     ports:
       - "3000:3000"
     environment:
