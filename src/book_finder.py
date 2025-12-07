@@ -17,23 +17,29 @@ def import_parsers():
             module = importlib.import_module(name)
             parser_modules.append(module)
 
-def _run_parser(parser_class,isbn, book_list):
+def _run_parser(parser_class,isbn, book_list, condition="", medium=""):
     out = None
     try:
-        out = parser_class.parse(isbn)
+        out = parser_class.parse(isbn, condition=condition, medium=medium)
 
         if out.price is None or out.price == 0:
+            return
+        
+        if condition and out.condition.name.upper() != condition.upper():
+            return
+        
+        if medium and out.medium.name.upper() != medium.upper():
             return
     except:
         return
     else:
         book_list.append(out)
 
-def find_cheapest_book(isbn):
+def find_cheapest_book(isbn, condition="", medium=""):
     import_parsers()
     book_objects = []
     for p in parser_modules:
-        _run_parser(p,isbn,book_objects)
+        _run_parser(p,isbn,book_objects,condition,medium)
     print(book_objects)
     if book_objects == []:
         return None

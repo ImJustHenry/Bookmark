@@ -3,6 +3,7 @@ from typing import List, Dict, Union
 import re
 from fetch_html import fetch_html 
 import book
+from book import Condition, Medium
 
 def parse_abebooks_prices(html: str) -> List[Dict[str, Union[str, float]]]:
     """
@@ -82,11 +83,13 @@ def search_abebooks(isbn_param, condition_param):
 if __name__ == "__main__":
     search_abebooks()
 
-def parse(isbn):
-    result = search_abebooks(isbn, "new")
+def parse(isbn, condition="new", medium="physical"):
+    result = search_abebooks(isbn, condition)
     if result == None:
         raise book.BookError()
-    book_result = book.Book(result['url'],result['title'],isbn,float(result['price']),book.Condition.NEW,book.Medium.PHYSICAL)
+    condition_enum = Condition[condition.upper()] if condition else Condition.NEW
+    medium_enum = Medium[medium.upper()] if medium else Medium.PHYSICAL
+    book_result = book.Book(result['url'],result['title'],isbn,float(result['price']),condition_enum, medium_enum)
     return book_result
 
 def get_test_isbn():

@@ -170,21 +170,6 @@
             .priceElement:hover {
                 transform: translateY(-2px);
             }
-
-            .filter {
-                padding: 8px 12px;
-                margin: 0 5px;
-                border: 1px solid white;
-                border-radius: 20px;
-                background-color: white;
-                font-size: 15px;
-            }
-
-            .filter:focus {
-                outline: none;
-                border-color: #e74c3c;
-            }
-
             /* Other Buttons and Text */
 
             .submitButton {
@@ -282,17 +267,6 @@
                 <div class="textbookContainer">
                     <img src="{{ image }}" alt="{{ title }}" class="textbook-image">
                 </div>
-                <select class="filter" id="conditionFilter">
-                    <option value="">Any Condition</option>
-                    <option value="NEW">New</option>
-                    <option value="USED">Used</option>
-                </select>
-                <select class="filter" id="mediumFilter">
-                    <option value="">Any Medium</option>
-                    <option value="PHYSICAL">Physical</option>
-                    <option value="EBOOK">Ebook</option>
-                    <option value="INTERACTIVE">Interactive</option>
-                </select>
                 <div class="summary-outer">
                     <h2>Summary of Book:</h2>
                     <div class="summary-inner">
@@ -312,13 +286,15 @@
 
         <div class="rightContent">
             <div class="bookInfo">
-                <h2>{{ title }} - {{ isbn }}</h2>
-                
+                <h2>{{ title }}</h2>
+                <p>ISBN: {{ isbn }}</p>
             </div>
             <div class="priceList">
                 <div class="priceElement">
                     <h3>Best Price!</h3>
                     <p>$ {{ price }}</p>
+                    <p>Condition: {{ condition.name }}</p>
+                    <p>Medium: {{ medium.name }}</p>
                     <div class="headerButton">
                         <a href = "{{ link }}">
                             <button type="button" class="goToSiteButton">Go to store</button>

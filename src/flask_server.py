@@ -72,7 +72,9 @@ def results_page():
         price=best_book.price,
         isbn=best_book.isbn,
         description=getattr(best_book, 'description', 'No description available.'),
-        image=getattr(best_book, 'image', '')
+        image=getattr(best_book, 'image', ''),
+        condition=getattr(best_book, 'condition', 'unknown'),
+        medium=getattr(best_book, 'medium', '')
     )
 
 @app.route("/api/search/book", methods=["POST"])
@@ -131,7 +133,6 @@ def search_isbn_api():
         
         logging.info(f"API search request for ISBN: {isbn}")
 
-        
         found_book = book_finder.find_cheapest_book(isbn_clean)
         if not found_book:
             return jsonify({"error": "No book found"}), 404
@@ -166,6 +167,8 @@ def go(data):
     """Handle real-time search requests via SocketIO"""
     session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     user_search = data.get("search", "").strip()
+    condition_filter = data.get("condition", "")
+    medium_filter = data.get("medium", "")    
 
     if not user_search:
         emit("search_error", {"error": "Please enter a book name or ISBN"})
@@ -180,7 +183,7 @@ def go(data):
 
         if isbn_clean.isdigit() and len(isbn_clean) in [10, 13]:
             # Use book_finder instead of search_book_by_isbn
-            found_book = book_finder.find_cheapest_book(isbn_clean)
+            found_book = book_finder.find_cheapest_book(isbn_clean, condition=condition_filter, medium=medium_filter)
         else:
             # Use Google Books API + book_finder instead of search_book_by_name
             googleBooksAPIObject = google_books_api.GoogleBooksAPI()
@@ -189,7 +192,7 @@ def go(data):
                 emit("search_error", {"error": "No book found"})
                 return
             isbn = book_results[0]['isbn']
-            found_book = book_finder.find_cheapest_book(isbn)
+            found_book = book_finder.find_cheapest_book(isbn, condition=condition_filter, medium=medium_filter)
             if found_book:
                 found_book.description = book_results[0].get('description', 'No description available.')
                 found_book.image = book_results[0].get('thumbnail', '')

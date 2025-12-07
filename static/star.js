@@ -1,19 +1,25 @@
 // star.js
 
 function getCurrentBookFromPage() {
-    const bookInfo = document.querySelector(".bookInfo h2")?.textContent;
-    const priceText = document.querySelector(".priceElement p")?.textContent;
+    const title = document.querySelector(".bookInfo h2")?.textContent.trim();
+    const isbnText = document.querySelector(".bookInfo p")?.textContent.trim();
     const linkEl = document.querySelector(".priceElement a");
     const imageEl = document.querySelector(".textbook-image");
 
-    if (!bookInfo) return null;
+    const conditionEl = document.querySelector(".priceElement p:nth-of-type(2)");
+    const mediumEl = document.querySelector(".priceElement p:nth-of-type(3)");
+    const priceEl = document.querySelector(".priceElement p:nth-of-type(1)");
 
-    const [title, isbn] = bookInfo.split(" - ").map(s => s.trim());
-    const price = priceText ? priceText.replace("$", "").trim() : "";
+    if (!title) return null;
+
+    const isbn = isbnText ? isbnText.replace("ISBN:", "").trim() : "";
+    const price = priceEl ? priceEl.textContent.replace("$", "").trim() : "";
     const link = linkEl ? linkEl.href : "";
     const image = imageEl ? imageEl.src : "";
+    const condition = conditionEl ? conditionEl.textContent.replace("Condition: ", "").trim() : "N/A";
+    const medium = mediumEl ? mediumEl.textContent.replace("Medium: ", "").trim() : "N/A";
 
-    return { title, isbn, price, link, image };
+    return { title, isbn, price, link, image, condition, medium };
 }
 
 function showPopup(message) {
@@ -34,12 +40,10 @@ function showPopup(message) {
 
     document.body.appendChild(popup);
 
-    // Fade in
     requestAnimationFrame(() => {
         popup.style.opacity = 1;
     });
 
-    // Fade out and remove after 2 seconds
     setTimeout(() => {
         popup.style.opacity = 0;
         setTimeout(() => popup.remove(), 300);
@@ -58,7 +62,6 @@ function updateStar(currentBook) {
         starButton.classList.remove("active");
     }
 
-    // Remove old listeners
     const newStarButton = starButton.cloneNode(true);
     starButton.parentNode.replaceChild(newStarButton, starButton);
 
@@ -72,7 +75,7 @@ function updateStar(currentBook) {
         } else {
             wishlist.push(currentBook);
             newStarButton.classList.add("active");
-            showPopup("Added to wishlist ⭐");
+            showPopup("Added to wishlist ⭐ Click star to favorite to wishlist!");
         }
 
         localStorage.setItem("wishlist", JSON.stringify(wishlist));
