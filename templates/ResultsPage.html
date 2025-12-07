@@ -57,6 +57,36 @@
                 padding: 30px;
                 text-align: center;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+                position: relative;
+            }
+
+            .websiteInfo h2 {
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+            .websiteInfo .favoriteButton {
+                position: absolute;
+                right: 30px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 32px;
+                height: 32px;
+                background-image: url("{{ url_for('static', filename='starInactive.png') }}");
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+                border: none;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            }
+
+            .websiteInfo .favoriteButton:hover {
+                transform: translateY(-50%) scale(1.1);
+            }
+
+            .websiteInfo .favoriteButton.active {
+                background-image: url("{{ url_for('static', filename='starActive.png') }}");
             }
 
             .textbookContainer {
@@ -139,13 +169,6 @@
 
             .priceElement:hover {
                 transform: translateY(-2px);
-            }
-
-            .favoriteStar {
-                width: 10px;
-                height: 10px;
-                object-fit: contain;
-                transition: transform 0.2s;
             }
 
             /* Other Buttons and Text */
@@ -236,6 +259,7 @@
 
         <div class="websiteInfo">
             <h2>Bookmark! Textbook Search Results</h2>
+            <button class="favoriteButton" id="topFavorite"></button>
         </div>
 
         <div class="mainContainer">
@@ -275,9 +299,6 @@
                             <button type="button" class="goToSiteButton">Go to store</button>
                         </a>
                     </div>
-                    <div class="favoriteButton">
-                        <button type="button" class ="favoriteStar"></button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -286,5 +307,16 @@
       <script src="/static/expand.js"></script>
       <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
       <script src="/static/ai_button.js"></script>
+      <script>
+        const currentBook = {
+            title: "{{ title }}",
+            isbn: "{{ isbn }}",
+            price: "{{ price }}",
+            link: "{{ link }}",
+            image: "{{ image }}"
+        };
+      </script>
+      <script src="/static/star.js"></script>
+      
     </body>
 </html>
