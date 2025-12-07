@@ -49,14 +49,14 @@
             transition: 0.3s;
          }
 
-         .filter {
+        .filter {
             padding: 8px 12px;
-            margin: 0 5px;
-            border: 1px solid white;
-            border-radius: 4px;
+            border: 1px solid #ccc;
+            border-radius: 50px;
             background-color: white;
             font-size: 15px;
-         }
+            cursor: pointer;
+        }
 
          .filter:focus {
             outline: none;
@@ -195,24 +195,29 @@
       <h3>Compare prices across Amazon, eBay and Google Books - all in one place!</h3>
    </section>
 
-   <section class="wrapper">
-      <div onsubmit="return false;">
-         <input type = "text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
-         <datalist id="history_list"></datalist>
-          <select class="filter" id="conditionFilter">
-            <option value="">Any Condition</option>
-            <option value="NEW">New</option>
-            <option value="USED">Used</option>
-         </select>
-         <select class="filter" id="mediumFilter">
-            <option value="">Any Medium</option>
-            <option value="PHYSICAL">Physical Book</option>
-            <option value="EBOOK">Ebook</option>
-            <option value="INTERACTIVE">Interactive</option>
-         </select>
-            <button id="go_button">GO</button>
-      </div>
-   </section>
+        <section class="wrapper">
+            <div onsubmit="return false;">
+                <input type="text" id="search_input" list="history_list" placeholder="Search by author, edition, ISBN">
+                <datalist id="history_list"></datalist>
+
+                <div class="filters-bar">
+                    <select class="filter" id="conditionFilter">
+                        <option value="">Any Condition</option>
+                        <option value="NEW">New</option>
+                        <option value="USED">Used</option>
+                    </select>
+
+                    <select class="filter" id="mediumFilter">
+                        <option value="">Any Medium</option>
+                        <option value="PHYSICAL">Physical Book</option>
+                        <option value="EBOOK">Ebook</option>
+                        <option value="INTERACTIVE">Interactive</option>
+                    </select>
+
+                    <button id="go_button">GO</button>
+                </div>
+            </div>
+        </section>
 
    <section>
       <p>Bookmark! is a student-friendly platform designed to make buying textbooks simpler, faster, and more affordable.

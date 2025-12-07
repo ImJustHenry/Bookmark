@@ -15,6 +15,10 @@ document.getElementById('go_button').addEventListener("click", () => {
     const query = document.getElementById("search_input").value.trim();
     if (!query) return;
 
+    // Get filter values
+    const conditionFilter = document.getElementById("conditionFilter").value;
+    const mediumFilter = document.getElementById("mediumFilter").value;
+
     // Save search history in localStorage
     let searches = JSON.parse(localStorage.getItem("searches") || "[]");
     searches.push(query);
@@ -25,7 +29,7 @@ document.getElementById('go_button').addEventListener("click", () => {
     document.getElementById("loading-screen-overlay").style.display = "flex";
 
     try {
-        socket.emit("Go_button_pushed", { search: query });
+        socket.emit("Go_button_pushed", { search: query, condition: conditionFilter, medium: mediumFilter });
     } catch (err) {
         console.warn("Socket error: ", err);
         document.getElementById("loading-screen-overlay").style.display = "none";

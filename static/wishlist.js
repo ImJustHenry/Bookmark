@@ -23,7 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
             card.innerHTML = `
                 <img src="${book.image || ''}" alt="${book.title}">
                 <h3>${book.title}</h3>
-                <p>ISBN: ${book.isbn}</p>
+                <p style="margin:2px 0;">ISBN: ${book.isbn}</p>
+                <p style="margin:2px 0;">Condition: ${book.condition || 'N/A'}</p>
+                <p style="margin:2px 0;">Medium: ${book.medium || 'N/A'}</p>
                 <div class="price">$${book.price}</div>
                 <a href="${book.link}" target="_blank">
                     <button class="goToSiteButton">Go to store</button>
