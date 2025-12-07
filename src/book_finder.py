@@ -21,6 +21,9 @@ def _run_parser(parser_class,isbn, book_list):
     out = None
     try:
         out = parser_class.parse(isbn)
+
+        if out.price is None or out.price == 0:
+            return
     except:
         return
     else:

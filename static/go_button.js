@@ -11,53 +11,43 @@ function updateHistoryDisplay() {
     });
 }
 
-//document.getElementById('go_button').addEventListener('click', () => {
-    //const searchInput = document.getElementById('search_input').value.trim();
-    //if (!searchInput) return;
-
-    // Add to localStorage
-    //let searches = JSON.parse(localStorage.getItem("searches") || "[]");
-    //searches.push(searchInput);
-    //localStorage.setItem("searches", JSON.stringify(searches));
-
-    //updateHistoryDisplay();
-
-    //socket.emit('Go_button_pushed', { search: searchInput });
-
-    //document.getElementById('search_input').value = "";
-//});
-
 document.getElementById('go_button').addEventListener("click", () => {
     const query = document.getElementById("search_input").value.trim();
-    if (!query)
-        return;
+    if (!query) return;
 
-    //save search
+    // Save search history in localStorage
     let searches = JSON.parse(localStorage.getItem("searches") || "[]");
     searches.push(query);
     localStorage.setItem("searches", JSON.stringify(searches));
-
     updateHistoryDisplay();
 
-    try {
-        socket.emit("Go_button_pushed", { search: query});
-    } catch (err) {
-        console.warn("Socket error: ", err);
-    }
-
-    // display loading screen
+    // Show loading screen
     document.getElementById("loading-screen-overlay").style.display = "flex";
 
-    // redirect to results page route
-    socket.on('redirect', (url) => {
-        window.location.href = url;
-    });
+    try {
+        socket.emit("Go_button_pushed", { search: query });
+    } catch (err) {
+        console.warn("Socket error: ", err);
+        document.getElementById("loading-screen-overlay").style.display = "none";
+    }
+});
+
+// Listen for server confirmation before redirecting
+socket.on('redirect', (url) => {
+    // Hide loading screen and redirect
+    document.getElementById("loading-screen-overlay").style.display = "none";
+    window.location.href = url;
+});
+
+// Optional: handle search errors
+socket.on('search_error', (data) => {
+    alert(data.error || "Search failed");
+    document.getElementById("loading-screen-overlay").style.display = "none";
 });
 
 // ENTER key triggers search
-
 document.getElementById("search_input").addEventListener("keydown", (e) => {
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
         document.getElementById("go_button").click();
     }
 });
