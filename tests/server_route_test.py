@@ -34,15 +34,15 @@ class TestServer(unittest.TestCase):
         response = self.client.get("/")
         self.assertIn(b'id="search_input"', response.data)
 
-    #If status code 200, page loads. If 400,no book selected logic works.
+    #If status code 200, page loads. If 400, no book selected logic works.
     def test_results_not_crashing(self):
         response = self.client.get("/results")
-        self.assertTrue(response.status_code in [200,400])
+        self.assertTrue(response.status_code in [200, 400])
 
     # Ensures that the search query parameter exists
     def test_results_with_query_parameter(self):
         response = self.client.get("/results?query=test")
-        self.assertIn(response.status_code, [200,400])
+        self.assertIn(response.status_code, [200, 400])
 
     def test_empty_query_handling(self):
         response = self.client.get("/results?query=")

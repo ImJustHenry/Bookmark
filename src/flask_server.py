@@ -63,7 +63,7 @@ def results_page():
     best_book = session_books.get(session_id)
 
     if not best_book:
-        return "No book found for this session.", 404
+        return "No book found for this session. Please search for a book first.", 400
 
     return render_template(
         "ResultsPage.html",
