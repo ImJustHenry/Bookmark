@@ -10,7 +10,7 @@ from flask_socketio import SocketIO, emit
 import os
 import uuid
 import logging
-from book_search_service import BookSearchService, search_book_by_name, search_book_by_isbn
+#imports for book search service removed
 import book_finder
 import google_books_api
 import book
@@ -32,19 +32,16 @@ if not os.path.exists(os.path.join(base_dir, "templates")):
 template_dir = os.path.join(base_dir, "templates")
 static_dir = os.path.join(base_dir, "static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-socketio=SocketIO(app)
-
-# Initialize book search service
-book_search_service = BookSearchService()
+socketio = SocketIO(app)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Global variable for best book (from main branch)
-best_book = book.Book("", "", 0, 0, book.Condition.UNKNOWN, book.Medium.UNKNOWN, "")
+# Session-based storage for best_book
+session_books = {}  # key: session_id, value: Book object
 
 @app.route("/")
-def home(): #renamed this from "results" to "home" for clarity
+def home(): 
     session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     resp = make_response(render_template("index.html"))
     resp.set_cookie("session_id", session_id, max_age=60*60*24) # When cookie expires
@@ -54,18 +51,27 @@ def home(): #renamed this from "results" to "home" for clarity
 def getStatic():
     return send_from_directory(static_dir, "/static")
 
+@app.route("/wishlist")
+def wishlist():
+    return render_template("wishlist.html")
+
 @app.route("/results")
 def results_page():
-    global best_book
-    title = best_book.title
-    isbn = best_book.isbn
-    price = best_book.price
-    link = best_book.link
-    # Use getattr with defaults in case attributes don't exist
-    description = getattr(best_book, 'description', 'No description available.')
-    image = getattr(best_book, 'image', '')
-    print(title)
-    return render_template("ResultsPage.html", link = link, title = title, price = price, isbn = isbn, description = description, image = image)
+    session_id = request.cookies.get("session_id")
+    best_book = session_books.get(session_id)
+
+    if not best_book:
+        return "No book found for this session.", 404
+
+    return render_template(
+        "ResultsPage.html",
+        link=best_book.link,
+        title=best_book.title,
+        price=best_book.price,
+        isbn=best_book.isbn,
+        description=getattr(best_book, 'description', 'No description available.'),
+        image=getattr(best_book, 'image', '')
+    )
 
 @app.route("/api/search/book", methods=["POST"])
 def search_book_api():
@@ -78,9 +84,29 @@ def search_book_api():
             return jsonify({"error": "Book name is required"}), 400
         
         logging.info(f"API search request for book: {book_name}")
-        result = search_book_by_name(book_name)
+
+        # Use Google Books API to get ISBN, then find cheapest book via book_finder
+        googleBooksAPIObject = google_books_api.GoogleBooksAPI()
+        book_results = googleBooksAPIObject.search_book_by_name(book_name)
+        if not book_results or len(book_results) == 0:
+            return jsonify({"error": "No book found"}), 404
         
-        return jsonify(result)
+        isbn = book_results[0]['isbn']
+        found_book = book_finder.find_cheapest_book(isbn)
+        if not found_book:
+            return jsonify({"error": "No book found"}), 404
+
+        found_book.description = book_results[0].get('description', 'No description available.')
+        found_book.image = book_results[0].get('thumbnail', '')
+
+        return jsonify({
+            "title": found_book.title,
+            "isbn": found_book.isbn,
+            "price": found_book.price,
+            "link": found_book.link,
+            "description": found_book.description,
+            "image": found_book.image
+        })
         
     except Exception as e:
         logging.error(f"API search error: {str(e)}")
@@ -102,9 +128,18 @@ def search_isbn_api():
             return jsonify({"error": "Invalid ISBN format"}), 400
         
         logging.info(f"API search request for ISBN: {isbn}")
-        result = search_book_by_isbn(isbn_clean)
+
         
-        return jsonify(result)
+        found_book = book_finder.find_cheapest_book(isbn_clean)
+        if not found_book:
+            return jsonify({"error": "No book found"}), 404
+        
+        return jsonify({
+            "title": found_book.title,
+            "isbn": found_book.isbn,
+            "price": found_book.price,
+            "link": found_book.link
+        })
         
     except Exception as e:
         logging.error(f"API ISBN search error: {str(e)}")
@@ -122,49 +157,56 @@ def health_check():
 @socketio.on("Go_button_pushed")
 def go(data):
     """Handle real-time search requests via SocketIO"""
-    global best_book
-    session_id = request.cookies.get("session_id")
+    session_id = request.cookies.get("session_id") or str(uuid.uuid4())
     user_search = data.get("search", "").strip()
-    
+
     if not user_search:
         emit("search_error", {"error": "Please enter a book name or ISBN"})
         return
-    
+
     logging.info(f"[Session {session_id}] User searched for: {user_search}")
-    
-    # Emit search started event
     emit("search_started", {"search_term": user_search})
-    
+
     try:
         # Determine if it's an ISBN or book name
         isbn_clean = user_search.replace('-', '').replace(' ', '')
-        
+
         if isbn_clean.isdigit() and len(isbn_clean) in [10, 13]:
-            # Search by ISBN
-            result = search_book_by_isbn(isbn_clean)
+            # Use book_finder instead of search_book_by_isbn
+            found_book = book_finder.find_cheapest_book(isbn_clean)
         else:
-            # Search by book name
-            result = search_book_by_name(user_search)
-        
-        # Emit results
-        emit("search_results", result)
-        
-        # Also update best_book for results page compatibility (from main branch)
-        # Try to find cheapest book using book_finder
-        try:
+            # Use Google Books API + book_finder instead of search_book_by_name
             googleBooksAPIObject = google_books_api.GoogleBooksAPI()
             book_results = googleBooksAPIObject.search_book_by_name(user_search)
-            if book_results and len(book_results) > 0:
-                isbn = book_results[0]['isbn']
-                found_book = book_finder.find_cheapest_book(isbn)
-                if found_book != None:
-                    best_book = found_book
-                    best_book.description = book_results[0].get('description', 'No description available.')
-                    best_book.image = book_results[0].get('thumbnail', '')
-                    socketio.emit('redirect', url_for('results_page'))
-        except Exception as e:
-            logging.error(f"Error updating best_book: {str(e)}")
-        
+            if not book_results or len(book_results) == 0:
+                emit("search_error", {"error": "No book found"})
+                return
+            isbn = book_results[0]['isbn']
+            found_book = book_finder.find_cheapest_book(isbn)
+            if found_book:
+                found_book.description = book_results[0].get('description', 'No description available.')
+                found_book.image = book_results[0].get('thumbnail', '')
+
+        if not found_book:
+            emit("search_error", {"error": "No book found"})
+            return
+
+        # Store session-specific best_book
+        session_books[session_id] = found_book
+
+        # Emit results
+        emit("search_results", {
+            "title": found_book.title,
+            "isbn": found_book.isbn,
+            "price": found_book.price,
+            "link": found_book.link,
+            "description": getattr(found_book, 'description', 'No description available.'),
+            "image": getattr(found_book, 'image', '')
+        })
+
+        # Redirect to results page
+        socketio.emit('redirect', url_for('results_page'))
+
     except Exception as e:
         logging.error(f"SocketIO search error: {str(e)}")
         emit("search_error", {"error": f"Search failed: {str(e)}"})
