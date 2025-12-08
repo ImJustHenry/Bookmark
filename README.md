@@ -1,90 +1,78 @@
-# Project Title
+# Bookmark! — Affordable Textbook Finder
 
-## Bookmark!: A Full Stack Web Application for Affordable Textbook Shopping
+Bookmark! is a Flask + Socket.IO web app that helps students find the cheapest textbook listings. It converts a title to ISBN with Google Books, scrapes multiple retailers, and surfaces the best price with a clean UI.
 
-Investigators:
-Mehul Antony — [mantony2@slu.edu](mailto:mantony2@slu.edu)
-Alexander Myers — [amyersXX@slu.edu](mailto:amyersXX@slu.edu)
-James Mueller — [jmuellerXX@slu.edu](mailto:james.p.mueller@slu.edu)
-Henry Wang — [hwang59@slu.edu](mailto:hwang59@slu.edu)
-Revateesa Dammalapati - [revateesa.dammalapati@slu.edu]
-# Project Statement
+Live app: https://bookmark-latest.onrender.com/
 
-One-sentence summary:
-We will design and implement a full stack web application that streamlines the process of finding affordable college textbooks by aggregating prices across multiple online retailers.
+## Team
 
-Expanded description:
-College students often face difficulties when purchasing textbooks due to high costs, numerous editions, and varying retailer offerings. Our application, **Bookmark!**, addresses these challenges by creating a centralized platform where students can search textbooks by title, author, ISBN, or edition number. The platform will fetch and compare prices from multiple major retailers, display availability and condition (new, used, etc.), and provide direct purchase links. By consolidating information, we aim to reduce the time, cost, and stress students face in acquiring their textbooks.
+- Mehul Antony — mantony2@slu.edu
+- Alexander Myers — amyersXX@slu.edu
+- James Mueller — jmuellerXX@slu.edu
+- Henry Wang — hwang59@slu.edu
+- Revateesa Dammalapati — revateesa.dammalapati@slu.edu
 
-# Methods
+## Features
 
-Frontend: HTML, CSS, Bootstrap, Jinja templating via Flask
-Backend: Flask (Python) with API fetching and data rendering
-Database: PostgreSQL using SQLAlchemy ORM in Flask
-APIs: Google Books API, eBay API (others if accessible)
-Additional Tools: Figma for prototyping
+- Search by title or ISBN with Google Books enrichment (cover, description, metadata)
+- Aggregates prices via pluggable parsers (AbeBooks, TextbookX, Macmillan, VitalSource, etc.)
+- Real-time search updates through Socket.IO; session-scoped results
+- REST endpoints for programmatic access and a simple health check
+- Docker support and a small unittest suite
 
-# Use Cases
+## Requirements
 
-* Help students save money on textbooks
-* Help students quickly locate correct editions
-* Help sellers identify appropriate price ranges
+- Python 3.11+ (tested with 3.11.5)
+- pip
+- Docker (optional for containerized runs)
 
-# Users
+## Quickstart (local)
 
-Primary users: College students searching for textbooks
-Secondary users: Sellers or researchers analyzing textbook pricing trends
+1. Clone the repo and enter it.`
+2. Install deps: `pip install -r requirements.txt`
+3. Run the server: `python .\src\flask_server.py`
+4. Open `http://localhost:3000` in a browser.
 
-# Architecture
+### Running tests
 
-* **Frontend**: HTML, CSS, Bootstrap UI, Flask Jinja templates
-* **Backend**: Python Flask server fetching data from APIs
-* **Database**: PostgreSQL for storing queries and caching book data
-* **APIs**: Google Books + eBay for price and edition data
+Use the built-in unittest suite: `python -m unittest discover -s tests`
 
-# Team Skillset
+## Docker
 
-Alex: HTML, C++, Python, browser knowledge
-Mehul: HTML, Python, Java, Figma, Project Management
-Henry: HTML, CSS, MySQL, PHP, Python
-James: HTML, Java, Python, C++, new to SQL
+- Build: `docker build -t bookmark:latest .`
+- Run: `docker run --rm -p 3000:3000 bookmark:latest`
 
-# Challenges and Risks
+The repo also includes helper scripts in `control_scripts/` for building and pushing images.
 
-* Limited access to some APIs (Amazon, Chegg, AbeBooks, Walmart)
-* Security concerns with fetching and displaying external data
-* Learning curve for integrating multiple APIs and ORMs
-* Potential issues with mimicking browser behavior for scraping or API calls
+## API (HTTP)
 
-# Plan and Schedule
+- `GET /api/health` — service heartbeat
+- `POST /api/search/book` — body: `{ "book_name": "Clean Code" }`
+- `POST /api/search/isbn` — body: `{ "isbn": "9780134685991" }`
 
-Goal 1: Extract relevant data from web pages and APIs
-Goal 2: Front-end prototyping in Figma
-Goal 3: Build basic HTML, CSS, Bootstrap components
-Goal 4: Establish frontend-backend communication via Flask
-Goal 5: Implement title → ISBN conversion and search handling
-Goal 6: Add AI-generated textbook descriptions (optional enhancement)
+Responses include `title`, `isbn`, `price`, `link`, and, when available, `description` and `image`.
 
-# Resources Needed
+## Realtime events (Socket.IO)
 
-## Software:
+- `Go_button_pushed` — payload: `{ search: "9780134685991", condition: "new", medium: "physical" }`
+- Emits `search_started`, `search_results`, `redirect` (to `/results`), or `search_error`.
+- AI recommendations: emit `get_ai_recommendations` with `{ currentBook, history }`; listen for `ai_recommendations` or `ai_error`.
 
-Flask (Python framework)
-PostgreSQL (database)
-Bootstrap (UI)
-Figma (prototyping)
-Google Books + eBay APIs
+## Project layout
 
-## Hardware:
+```
+src/
+	flask_server.py      # Flask app + Socket.IO events
+	book_finder.py       # Aggregates parser outputs to pick cheapest book
+	parsers/             # Retailer-specific scrapers
+	google_books_api.py  # Title -> ISBN + metadata
+templates/, static/    # Jinja pages and client JS
+control_scripts/       # Docker build/run helpers
+tests/                 # unittest-based checks
+```
 
-Standard laptops for development and testing
+## Development notes
 
-## Other:
-
-GitHub (version control)
-Discord (team coordination)
-
-# Architectural Diagram
-
-(Placeholder: User → Web App (Flask frontend/backend) → Database + APIs)
-# team-james-demo
+- Parsers live in `src/parsers/` and are auto-imported by `book_finder`; add a `parse(isbn, condition, medium)` function to integrate a new source.
+- Templates are loaded relative to project root; keep working directory at repo root when running tests or the server.
+- Logging is set to INFO; adjust in `flask_server.py` if you need more verbosity.
